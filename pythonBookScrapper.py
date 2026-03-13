@@ -1,3 +1,24 @@
+# Auther: Luke Smith
+# Description: It scrapes data from https://books.toscrape.com and saves it into several file formats(only excel right now).
+
+""" 
+Improvements:
+    1. Turn the Book object into a dataclass
+    2. Stop using -1 for errors. Instead raise an exception
+    3. Rather than storing all the pages, and then writing to the workbook, 
+    scrape page -> write page to work book -> Then forget page and move on to next one.
+    4. Rather than multiple sheets, just put some buffer rows between pages
+    5. Loging instead of prints
+    6. Pagination without building URLs - instead scrape the URL in the next button.
+    7. CSV andn JSON exports as well
+    8. Add Retrying, timeouts, and skiping - so that one page failing to load doesn't end 
+    the whole program
+    9. Figure out user angents so that sites don't block the scrape
+    10. Rate limits - sending a but-ton of requests too quickly will make the target site raise flags
+    11. Check for expected elements - if the site returns its own custom error page it could 
+    break things as request.status_code wouldn't get that.
+"""
+
 import requests
 from bs4 import BeautifulSoup
 from openpyxl import Workbook
