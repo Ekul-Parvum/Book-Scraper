@@ -3,36 +3,27 @@
 
 """ 
 Improvements:
-    1. Turn the Book object into a dataclass
     2. Stop using -1 for errors. Instead raise an exception
     3. Rather than storing all the pages, and then writing to the workbook, 
     scrape page -> write page to work book -> Then forget page and move on to next one.
     4. Rather than multiple sheets, just put some buffer rows between pages
     5. Loging instead of prints
-    6. Pagination without building URLs - instead scrape the URL in the next button.
     7. CSV andn JSON exports as well
     8. Add Retrying, timeouts, and skiping - so that one page failing to load doesn't end 
     the whole program
     9. Figure out user angents so that sites don't block the scrape
     10. Rate limits - sending a but-ton of requests too quickly will make the target site raise flags
     11. Check for expected elements - if the site returns its own custom error page it could 
-    break things as request.status_code wouldn't get that.
+    break things as request.status_code wouldn't catch that.
 """
 
-import requests
-from bs4 import BeautifulSoup
-from openpyxl import Workbook
-from book import Book
+import requests                 # For getting html data from sites
+from bs4 import BeautifulSoup   # For formating the html data in a way that is nice to work with
+from openpyxl import Workbook   # For working with excel
+from urllib.parse import urljoin# Has some functions to make working with urls easy
+from book import Book           # For storing data on the books
 
 print("Starting Program")
-
-# incrementPageUrl - changes the pageUrl based on the new pageNum
-# Parameters:
-#       newPageNum - The new page number that the url should be updated to reflect
-#       siteUrl - The base site url with out any page number
-# Returns string - The siteUrl with the given page num in it.
-def incrementPageUrl(newPageNum, siteUrl):
-    return siteUrl + str(newPageNum) + ".html"
 
 # getSoup - Gets the soup for the given url
 # Parameters:
@@ -43,18 +34,23 @@ def getSoup(url):
         response = requests.get(url)
     except requests.exceptions.MissingSchema:
         print("Invalid URL (missing schema, like http://)")
+        print("Given URL: " + url)
         return -1
     except requests.exceptions.InvalidURL:
         print("Invalid URL format")
+        print("Given URL: " + url)
         return -1
     except requests.exceptions.ConnectionError:
         print("Failed to connect to server")
+        print("Given URL: " + url)
         return -1
     except requests.exceptions.Timeout:
         print("Request timed out")
+        print("Given URL: " + url)
         return -1
     except requests.exceptions.RequestException as e:
         print("Other request error:", e)
+        print("Given URL: " + url)
         return -1
 
     code = response.status_code
@@ -86,12 +82,30 @@ def getSoup(url):
     soup = BeautifulSoup(response.text, "html.parser")
     return soup
 
+# incrementPageUrl - changes the pageUrl based on the new pageNum
+# Parameters:
+#       currentUrl - The url we are currently on
+# Returns string - The currentUrl with the given page num in it.
+def incrementPageUrl(currentUrl, soup):
+    if (soup == -1):
+        return -1
+    
+    # find the link in the next button on the page. 
+    nextButton = soup.find("li", class_="next")
+    
+    if (nextButton):
+        nextPage = nextButton.find("a")["href"]
+        nextUrl = urljoin(currentUrl, nextPage)
+        return nextUrl
+    else:
+        return -1
+
+
 # getNumberOfPages - Gets the number of pages of books in the website
 # Parameters:
 #       url - The url it will search for the page num in
 # Returns int - The number of pages. Negative 1 if it failed to get a number
-def getNumberOfPages(url):
-    soup = getSoup(url)
+def getNumberOfPages(url, soup):
 
     if (soup == -1):
         return -1
@@ -125,8 +139,7 @@ def printBooks(bookObjs):
 # Paremeters:
 #       pageUrl - string with the url of the page to be searched for books
 # Returns: Array of books found at the given URL. Returns -1 if it failed
-def getBooksFromPage(pageUrl):
-    soup = getSoup(pageUrl)
+def getBooksFromPage(pageUrl, soup):
 
     if (soup == -1):
         return -1
@@ -166,13 +179,14 @@ def makeWorkBookSheet(bookObjs, pageNum, sheet):
 
 # getUserInput - Gets the user input for how many pages the program will look through
 # Parameters: None
-# Returns: The number of pages the user wants to scrape from. 0 If the user wants to quit 
-def getUserInput():
-    numOfPages = getNumberOfPages(pageUrl)
+# Returns: The number of pages the user wants to scrape from. -1 If the user wants to quit 
+def getUserInput(pageUrl):
+    soup = getSoup(pageUrl)
+    numOfPages = getNumberOfPages(pageUrl, soup)
 
     if (numOfPages < 0):
         print("Failed to get Pages. Quiting Program")
-        return 0
+        return -1
 
     print("Total Number of pages: " + str(numOfPages))
 
@@ -190,27 +204,34 @@ def getUserInput():
 
     return userInput
 
-
-siteUrl = "https://books.toscrape.com/catalogue/page-"
-pageNum = 1
-pageUrl = siteUrl + str(pageNum) + ".html"
+pageUrl = "https://books.toscrape.com"
 
 pages = []
 lengthOfBar = 30
 
-numOfPages = getUserInput()
+numOfPages = getUserInput(pageUrl)
 
 if (numOfPages != 0):
     print("Scraping from pages.")
     print("|" + "-"*lengthOfBar + "|  (0 / " + str(numOfPages) + ")", end="\r")
 
+    # Loop through each page:
     for index in range(0, numOfPages):
-        thisPage = getBooksFromPage(pageUrl)
-        if (thisPage != -1):
-            pages.append(thisPage)
-            pageNum += 1
-            pageUrl = incrementPageUrl(pageNum, siteUrl)
+        # Get the soup of the page:
+        soup = getSoup(pageUrl)
 
+        # Get the books from the current page
+        thisPage = getBooksFromPage(pageUrl, soup)
+
+        # If we got stuff from this page:
+        if (thisPage != -1):
+            # Then push the books from this page to the pages array of arrays:
+            pages.append(thisPage)
+
+            # Now the url is incremented
+            pageUrl = incrementPageUrl(pageUrl, soup)
+
+            # And we update the loading bar:
             numOfEquals = int((lengthOfBar/numOfPages) * (index + 1))
             numOfDashes = lengthOfBar - numOfEquals
             print("|" + "="*numOfEquals + "-"*numOfDashes + "|  (" + str(index + 1) + " / " + str(numOfPages) + ")", end="\r")

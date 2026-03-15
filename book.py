@@ -1,7 +1,10 @@
+from dataclasses import dataclass
+
+@dataclass
 class Book:
-    def __init__(self, title, price):
-        self.title = title
-        self.price = price
-    
+    title: str
+    price: float
+
     def getRowOfData(self):
         return [str(self.title), str(self.price)]
+    
