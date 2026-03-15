@@ -137,9 +137,9 @@ def printBooks(bookObjs):
 
 # getBooksFromPage - Formats all the books in the given URL into book objects
 # Paremeters:
-#       pageUrl - string with the url of the page to be searched for books
+#       soup - The soup of the page to be searched for books
 # Returns: Array of books found at the given URL. Returns -1 if it failed
-def getBooksFromPage(pageUrl, soup):
+def getBooksFromPage(soup):
 
     if (soup == -1):
         return -1
@@ -204,6 +204,29 @@ def getUserInput(pageUrl):
 
     return userInput
 
+# saveAsExcelSheet - Writes the given pages to an excel document
+# Parameters:
+#       pages - A 2d array. An array of pages, where each page is an array of bookObjs
+#       filename - string that is the name of the file WITHOUT the ending. So NO ".xlsx"
+# returns: Nothing
+def saveAsExcelSheet(pages, filename):
+    print("Making Excel Object")
+    workBook = Workbook()
+    sheet = workBook.active
+
+    print("Pushing Data into Excel Object")
+    for pageNumber, page in enumerate(pages, start=1):
+        makeWorkBookSheet(page, pageNumber, sheet)
+        if (pageNumber < numOfPages):
+            sheet = workBook.create_sheet(title="New Sheet")
+
+
+    endFilename = filename + ".xlsx"
+
+    print("Saving Excel Document titled " + endFilename)
+    workBook.save(endFilename)
+
+
 pageUrl = "https://books.toscrape.com"
 
 pages = []
@@ -221,7 +244,7 @@ if (numOfPages != 0):
         soup = getSoup(pageUrl)
 
         # Get the books from the current page
-        thisPage = getBooksFromPage(pageUrl, soup)
+        thisPage = getBooksFromPage(soup)
 
         # If we got stuff from this page:
         if (thisPage != -1):
@@ -240,17 +263,6 @@ if (numOfPages != 0):
 
     print("\n")
 
-    print("Making Excel Object")
-    workBook = Workbook()
-    sheet = workBook.active
-
-    print("Pushing Data into Excel Object")
-    for pageNumber, page in enumerate(pages, start=1):
-        makeWorkBookSheet(page, pageNumber, sheet)
-        if (pageNumber < numOfPages):
-            sheet = workBook.create_sheet(title="New Sheet")
-
-    print("Saving Excel Document")
-    workBook.save("TrialRun.xlsx")
+saveAsExcelSheet(pages, "testFileName")
 
 print("Thank you for using this program!")
