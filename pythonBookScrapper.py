@@ -4,9 +4,7 @@
 """ 
 Improvements:
     2. Stop using -1 for errors. Instead raise an exception
-    3. Rather than storing all the pages, and then writing to the workbook, 
     scrape page -> write page to work book -> Then forget page and move on to next one.
-    4. Rather than multiple sheets, just put some buffer rows between pages
     5. Loging instead of prints
     7. CSV andn JSON exports as well
     8. Add Retrying, timeouts, and skiping - so that one page failing to load doesn't end 
@@ -208,35 +206,29 @@ def getUserInput(pageUrl):
 
     return userInput
 
-# saveAsExcelSheet - Writes the given pages to an excel document
+# savePageToWorkbook - Saves the given page to the given workbook
 # Parameters:
-#       pages - A 2d array. An array of pages, where each page is an array of bookObjs
-#       filename - string that is the name of the file WITHOUT the ending. So NO ".xlsx"
-# returns: Nothing
-def saveAsExcelSheet(pages, filename):
-    print("Making Excel Object")
-    workBook = Workbook()
-    sheet = workBook.active
+#       workbook - The workbook which the page will be saved to
+#       page - the page to be saved
+#       pageNumber - The page number that we are on
+# Returns: Nothing directly, just modifies the workbook
+def savePageToWorkbook(workbook, page, pageNumber):
+    sheet = workbook.active
 
-    print("Pushing Data into Excel Object")
-    for pageNumber, page in enumerate(pages, start=1):
+    makeWorkBookSheet(page, pageNumber, sheet)
 
-        # Put all the books into the current sheet:
-        makeWorkBookSheet(page, pageNumber, sheet)
+# - - - [ Variables:  ] - - - 
+pageUrl = "https://books.toscrape.com"  # The URL of the page we are currently on
+numOfPages = getUserInput(pageUrl)      # Gets user input for the number of pages to scrape data from
+workBook = Workbook()                   # Workbook for saving the data into an excel doc
+pageNum = 1                             # The page number of the page we are currently on
+# - - - - - - - - - - - - - - 
 
+# -- -- --[  Constants:  ]-- -- --
+lengthOfBar = 30                        # The length of the loading bar
+outputFileName = "outPutFile"           # The name of the ouputfiles
+# -- -- -- -- -- -- -- -- -- -- --
 
-    endFilename = filename + ".xlsx"
-
-    print("Saving Excel Document titled " + endFilename)
-    workBook.save(endFilename)
-
-
-pageUrl = "https://books.toscrape.com"
-
-pages = []
-lengthOfBar = 30
-
-numOfPages = getUserInput(pageUrl)
 
 if (numOfPages != 0):
     print("Scraping from pages.")
@@ -253,10 +245,13 @@ if (numOfPages != 0):
         # If we got stuff from this page:
         if (thisPage != -1):
             # Then push the books from this page to the pages array of arrays:
-            pages.append(thisPage)
+            #pages.append(thisPage)
+
+            savePageToWorkbook(workBook, thisPage, pageNum)
 
             # Now the url is incremented
             pageUrl = incrementPageUrl(pageUrl, soup)
+            pageNum += 1
 
             # And we update the loading bar:
             numOfEquals = int((lengthOfBar/numOfPages) * (index + 1))
@@ -267,6 +262,8 @@ if (numOfPages != 0):
 
     print("\n")
 
-saveAsExcelSheet(pages, "testFileName")
+# Save to an excel document
+excelDocName = outputFileName + ".xlsx"
+workBook.save(excelDocName)
 
 print("Thank you for using this program!")
