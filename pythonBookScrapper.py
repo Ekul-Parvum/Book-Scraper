@@ -4,7 +4,6 @@
 """ 
 Improvements:
     2. Stop using -1 for errors. Instead raise an exception
-    scrape page -> write page to work book -> Then forget page and move on to next one.
     5. Loging instead of prints
     7. CSV andn JSON exports as well
     8. Add Retrying, timeouts, and skiping - so that one page failing to load doesn't end 
