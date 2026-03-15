@@ -100,9 +100,9 @@ def incrementPageUrl(currentUrl, soup):
 
 # getNumberOfPages - Gets the number of pages of books in the website
 # Parameters:
-#       url - The url it will search for the page num in
+#       soup - The soup of the page it will search for the page num in
 # Returns int - The number of pages. Negative 1 if it failed to get a number
-def getNumberOfPages(url, soup):
+def getNumberOfPages(soup):
 
     if (soup == -1):
         return -1
@@ -148,12 +148,24 @@ def getBooksFromPage(soup):
     bookObjs = []
 
     for bookHtml in booksHtml:
-        bookObjs.append(
-            Book(
-                bookHtml.h3.a["title"],
-                bookHtml.find("p", class_="price_color").text
-            )
-        )
+
+        title_tag = bookHtml.select_one("h3 a")
+        price_tag = bookHtml.select_one("p.price_color")
+
+        # Checking that there is a title tag and price tag
+        if (title_tag and price_tag):
+            title = title_tag.get("title")
+            # Note: tag["title"] would crash if there is no title, while .get("title") would return None
+
+            # Checking that there is a title in the title_tag
+            if (title):
+                # Finaly, actualy puting the book data into a book object and into the bookObjs array
+                bookObjs.append(
+                    Book(
+                        title,
+                        price_tag.text
+                    )
+                )
     
     return bookObjs
 
@@ -183,7 +195,7 @@ def makeWorkBookSheet(bookObjs, pageNum, sheet):
 # Returns: The number of pages the user wants to scrape from. -1 If the user wants to quit 
 def getUserInput(pageUrl):
     soup = getSoup(pageUrl)
-    numOfPages = getNumberOfPages(pageUrl, soup)
+    numOfPages = getNumberOfPages(soup)
 
     if (numOfPages < 0):
         print("Failed to get Pages. Quiting Program")
