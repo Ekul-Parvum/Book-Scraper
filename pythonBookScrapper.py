@@ -168,7 +168,11 @@ def getBooksFromPage(soup):
 # Returns: Nothing
 def makeWorkBookSheet(bookObjs, pageNum, sheet):
     # Making the sheet:
-    sheet.title = "Books, page " + str(pageNum)
+    sheet.title = str(pageNum) + "pages of books"
+
+    sheet.append(["", ""])
+    sheet.append(["Page: " + str(pageNum), ""])
+    sheet.append(["", ""])
 
     # Making a header:
     sheet.append(["Title", "Price"])
@@ -216,9 +220,9 @@ def saveAsExcelSheet(pages, filename):
 
     print("Pushing Data into Excel Object")
     for pageNumber, page in enumerate(pages, start=1):
+
+        # Put all the books into the current sheet:
         makeWorkBookSheet(page, pageNumber, sheet)
-        if (pageNumber < numOfPages):
-            sheet = workBook.create_sheet(title="New Sheet")
 
 
     endFilename = filename + ".xlsx"
