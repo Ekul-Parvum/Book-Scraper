@@ -5,13 +5,16 @@
 Improvements:
     2. Stop using -1 for errors. Instead raise an exception
     5. Loging instead of prints
+
     7. CSV andn JSON exports as well
+
     8. Add Retrying, timeouts, and skiping - so that one page failing to load doesn't end 
     the whole program
     9. Figure out user angents so that sites don't block the scrape
     10. Rate limits - sending a but-ton of requests too quickly will make the target site raise flags
-    11. Check for expected elements - if the site returns its own custom error page it could 
-    break things as request.status_code wouldn't catch that.
+
+    12. User request session
+    13. Make congig folder
 """
 
 import requests                 # For getting html data from sites
@@ -101,25 +104,34 @@ def incrementPageUrl(currentUrl, soup):
 # getNumberOfPages - Gets the number of pages of books in the website
 # Parameters:
 #       soup - The soup of the page it will search for the page num in
-# Returns int - The number of pages. Negative 1 if it failed to get a number
+# Returns int - The number of pages. None if it failed to get a number
 def getNumberOfPages(soup):
 
     if (soup == -1):
         return -1
+    
+    # This will be the text in the <li> tag that has the page number
+    pageOfText = soup.find("ul", class_="pager")
 
-    pageOfText = soup.find("ul", class_="pager").find("li", class_="current").text
-    start = int(pageOfText.rfind("of")) + 3
-    end = pageOfText.find(" ", start)
+    if (pageOfText): # Checking that it found the <ul class="pager">
+        pageOfText = pageOfText.find("li", class_="current")
+        if (pageOfText): # Checking that it found the <li class="current">
+            pageOfText = pageOfText.text
+        else:
+            return None # Return none of it could not find pageOfText
+    else:
+        return None # Return none of it could not find pageOfText
+    
+    # Assuming it found pageOfText, then we can start parsing it for the page number
+    # The pageOfText should have something like "Page 1 of 50" or something.
 
-    numOfPages = -1
+    numOfPages = int(pageOfText.split()[-1])
+    # This uses negative indexing, so yes, we are looking of the -1 index of the sequence.
+    # That should be the last "word" in the pageOfText string, which should be the number of pages.
 
-    if (end != -1):
-        try:
-            numOfPages = int(pageOfText[start:end])
-        except ValueError:
-            print("Error: Invalid Page Number. Could not convert " + pageOfText[start:end] + " to int.")
-
-    return numOfPages
+    if (numOfPages != -1):
+        return numOfPages
+    return None
 
 # printBooks - Prints all the books in the given array of books
 # Paremeters:
@@ -135,7 +147,7 @@ def printBooks(bookObjs):
 # getBooksFromPage - Formats all the books in the given URL into book objects
 # Paremeters:
 #       soup - The soup of the page to be searched for books
-# Returns: Array of books found at the given URL. Returns -1 if it failed
+# Returns: Array of books found at the given URL. Returns -1 if it failed. Returns none if no books were found.
 def getBooksFromPage(soup):
 
     if (soup == -1):
@@ -166,6 +178,10 @@ def getBooksFromPage(soup):
                         price_tag.text
                     )
                 )
+    
+    
+    if (len(bookObjs) <= 0):
+        return None
     
     return bookObjs
 
