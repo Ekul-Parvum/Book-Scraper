@@ -3,7 +3,7 @@
 
 """ 
 Improvements:
-    2. Stop using -1 for errors. Instead raise an exception
+    2. Stop using -1 for errors. Instead raise an exception - or use none - Mabye a hybrid aproach?
     5. Loging instead of prints
 
     7. CSV andn JSON exports as well
