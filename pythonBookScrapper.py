@@ -15,6 +15,11 @@ Improvements:
 
     12. User request session
     13. Make congig folder
+
+    14. Figure out how to save files to folders outside of this directory
+
+    Lastly. Once the scraper technicaly works, figure out all the "good product" stuff.
+        Lastly. How would a customer run it? And what output would they actualy see?
 """
 
 import requests                 # For getting html data from sites
@@ -22,6 +27,7 @@ from bs4 import BeautifulSoup   # For formating the html data in a way that is n
 from openpyxl import Workbook   # For working with excel
 from urllib.parse import urljoin# Has some functions to make working with urls easy
 from book import Book           # For storing data on the books
+import os                       # For handling filesystem stuff
 
 print("Starting Program")
 
@@ -290,7 +296,16 @@ if (numOfPages != 0):
     print("\n")
 
 # Save to an excel document
-excelDocName = outputFileName + ".xlsx"
+folderPath = "~/WindowsSucks"   # Linux/WSL file path
+folderPath = os.path.expanduser(folderPath)
+
+# Create folder if it doesn't exist
+os.makedirs(folderPath, exist_ok=True)
+
+#excelDocName = folderPath + outputFileName + ".xlsx"
+excelDocName = os.path.join(folderPath, outputFileName + ".xlsx")
+
+print("Saving to: " + excelDocName)
 workBook.save(excelDocName)
 
 print("Thank you for using this program!")
