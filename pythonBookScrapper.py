@@ -3,7 +3,6 @@
 
 """ 
 Improvements:
-    2. Stop using -1 for errors. Instead raise an exception - or use none - Mabye a hybrid aproach?
     5. Loging instead of prints
 
     7. CSV andn JSON exports as well
@@ -15,8 +14,6 @@ Improvements:
 
     12. User request session
     13. Make congig folder
-
-    14. Figure out how to save files to folders outside of this directory
 
     Lastly. Once the scraper technicaly works, figure out all the "good product" stuff.
         Lastly. How would a customer run it? And what output would they actualy see?
@@ -34,58 +31,39 @@ print("Starting Program")
 # getSoup - Gets the soup for the given url
 # Parameters:
 #       string url - The url from which a soup will be got. I am a poet
-# Returns the soup, or -1 if something went wrong
+# Returns the soup - There are a TON of exceptions in here, so if this method runs successfully, you can trust it returns a functional soup
 def getSoup(url):
     try:
         response = requests.get(url)
     except requests.exceptions.MissingSchema:
         print("Invalid URL (missing schema, like http://)")
         print("Given URL: " + url)
-        return -1
+        raise Exception("Request Failure")
     except requests.exceptions.InvalidURL:
         print("Invalid URL format")
         print("Given URL: " + url)
-        return -1
+        raise Exception("Request Failure")
     except requests.exceptions.ConnectionError:
         print("Failed to connect to server")
         print("Given URL: " + url)
-        return -1
+        raise Exception("Request Failure")
     except requests.exceptions.Timeout:
         print("Request timed out")
         print("Given URL: " + url)
-        return -1
+        raise Exception("Request Failure")
     except requests.exceptions.RequestException as e:
         print("Other request error:", e)
         print("Given URL: " + url)
-        return -1
+        raise Exception("Request Failure: " + e)
 
-    code = response.status_code
-    match code:
-        case _ if 100 <= code <= 199:
-            print("[" + str(code) + "]: Informational")
-            return -1
-        case _ if 200 <= code <= 299:
-            pass
-        case _ if 300 <= code <= 399:
-            print("[" + str(code) + "]: Redirected from site")
-            return -1
-        case _ if 400 <= code <= 499:
-            print("[" + str(code) + "]: Client Error")
-            return -1
-        case _ if 500 <= code <= 599:
-            print("[" + str(code) + "]: Server Error")
-            return -1
-        case _:
-            try:
-                codeStr = str(code)
-                print("Encountered Unkown status Code: " + codeStr)
-            except:
-                print("Encountered Unkown status Code.")
-            return -1
-
+    response.raise_for_status() # Raises an exception if it gets an unexpected status code like "404 Not Found"
 
     response.encoding = "utf-8"
-    soup = BeautifulSoup(response.text, "html.parser")
+    try:
+        soup = BeautifulSoup(response.text, "html.parser")
+    except Exception as e:
+        raise Exception("Soup Failed: " + e)
+
     return soup
 
 # incrementPageUrl - changes the pageUrl based on the new pageNum
@@ -93,9 +71,6 @@ def getSoup(url):
 #       currentUrl - The url we are currently on
 # Returns string - The currentUrl with the given page num in it.
 def incrementPageUrl(currentUrl, soup):
-    if (soup == -1):
-        return -1
-    
     # find the link in the next button on the page. 
     nextButton = soup.find("li", class_="next")
     
@@ -104,7 +79,7 @@ def incrementPageUrl(currentUrl, soup):
         nextUrl = urljoin(currentUrl, nextPage)
         return nextUrl
     else:
-        return -1
+        raise Exception("Could not find Next Button with the next page URL")
 
 
 # getNumberOfPages - Gets the number of pages of books in the website
@@ -112,10 +87,6 @@ def incrementPageUrl(currentUrl, soup):
 #       soup - The soup of the page it will search for the page num in
 # Returns int - The number of pages. None if it failed to get a number
 def getNumberOfPages(soup):
-
-    if (soup == -1):
-        return -1
-    
     # This will be the text in the <li> tag that has the page number
     pageOfText = soup.find("ul", class_="pager")
 
@@ -131,10 +102,13 @@ def getNumberOfPages(soup):
     # Assuming it found pageOfText, then we can start parsing it for the page number
     # The pageOfText should have something like "Page 1 of 50" or something.
 
-    numOfPages = int(pageOfText.split()[-1])
-    # This uses negative indexing, so yes, we are looking of the -1 index of the sequence.
-    # That should be the last "word" in the pageOfText string, which should be the number of pages.
-
+    try:
+        numOfPages = int(pageOfText.split()[-1])
+        # This uses negative indexing, so yes, we are looking of the -1 index of the sequence.
+        # That should be the last "word" in the pageOfText string, which should be the number of pages.
+    except:
+        return None
+    
     if (numOfPages != -1):
         return numOfPages
     return None
@@ -155,10 +129,6 @@ def printBooks(bookObjs):
 #       soup - The soup of the page to be searched for books
 # Returns: Array of books found at the given URL. Returns -1 if it failed. Returns none if no books were found.
 def getBooksFromPage(soup):
-
-    if (soup == -1):
-        return -1
-
     # Find all the books
     booksHtml = soup.find_all("article", class_="product_pod")
 
@@ -216,12 +186,18 @@ def makeWorkBookSheet(bookObjs, pageNum, sheet):
 # Parameters: None
 # Returns: The number of pages the user wants to scrape from. -1 If the user wants to quit 
 def getUserInput(pageUrl):
-    soup = getSoup(pageUrl)
+    soup = None
+    try:
+        soup = getSoup(pageUrl)
+    except Exception as e:
+        raise Exception("Soup Failed: " + e)
+
     numOfPages = getNumberOfPages(soup)
 
+    if (numOfPages == None):
+        raise Exception("Failed to get Pages: Returned None.")
     if (numOfPages < 0):
-        print("Failed to get Pages. Quiting Program")
-        return -1
+        raise Exception("Failed to get Pages: Out of range.")
 
     print("Total Number of pages: " + str(numOfPages))
 
@@ -235,7 +211,7 @@ def getUserInput(pageUrl):
                 print("That number is out of range. Please try again")
         except:
             print("That is not a valid number. Please try again")
-            userInput = -1
+            userInput = -1 # Setting it to -1 so the while loop starts over
 
     return userInput
 
@@ -270,20 +246,32 @@ if (numOfPages != 0):
     # Loop through each page:
     for index in range(0, numOfPages):
         # Get the soup of the page:
-        soup = getSoup(pageUrl)
+        try:
+            soup = getSoup(pageUrl)
+        except Exception as e:
+            print("Soup encountered exception: " + e)
+            continue # Move on to next page if the soup fails
+            # ToDo: Add Retry logic here
 
         # Get the books from the current page
         thisPage = getBooksFromPage(soup)
 
         # If we got stuff from this page:
-        if (thisPage != -1):
+        if (thisPage != None):
             # Then push the books from this page to the pages array of arrays:
             #pages.append(thisPage)
 
             savePageToWorkbook(workBook, thisPage, pageNum)
 
             # Now the url is incremented
-            pageUrl = incrementPageUrl(pageUrl, soup)
+            try:
+                pageUrl = incrementPageUrl(pageUrl, soup)
+            except Exception as e:
+                print("Failed to get next page url")
+                print("Error: " + e)
+                break
+                # ToDo: Add retry logic to refresh the page/soup and try incrementPageUrl() again.
+
             pageNum += 1
 
             # And we update the loading bar:
