@@ -6,13 +6,7 @@ Improvements:
     5. Loging instead of prints
 
     7. CSV andn JSON exports as well
-
-    8. Add Retrying, timeouts, and skiping - so that one page failing to load doesn't end 
-    the whole program
-    9. Figure out user angents so that sites don't block the scrape
-    10. Rate limits - sending a but-ton of requests too quickly will make the target site raise flags
-
-    12. User request session
+    
     13. Make congig folder
 
     Lastly. Once the scraper technicaly works, figure out all the "good product" stuff.
@@ -25,46 +19,58 @@ from openpyxl import Workbook   # For working with excel
 from urllib.parse import urljoin# Has some functions to make working with urls easy
 from book import Book           # For storing data on the books
 import os                       # For handling filesystem stuff
+import time                     # For deleys
+import random                   # For random number generator
 
-print("Starting Program")
+
+# -- -- --[  Constants:  ]-- -- --
+lengthOfBar = 30                        # The length of the loading bar
+outputFileName = "outPutFile"           # The name of the ouputfiles
+numOfRetries = 3                        # The number of times the program should try getting the soup of a page before giving up.
+# -- -- -- -- -- -- -- -- -- -- --
 
 # getSoup - Gets the soup for the given url
 # Parameters:
 #       string url - The url from which a soup will be got. I am a poet
+#       session - This is used to get a repsonse from the site.
 # Returns the soup - There are a TON of exceptions in here, so if this method runs successfully, you can trust it returns a functional soup
-def getSoup(url):
+def getSoup(url, session):
     try:
-        response = requests.get(url)
-    except requests.exceptions.MissingSchema:
-        print("Invalid URL (missing schema, like http://)")
-        print("Given URL: " + url)
-        raise Exception("Request Failure")
-    except requests.exceptions.InvalidURL:
-        print("Invalid URL format")
-        print("Given URL: " + url)
-        raise Exception("Request Failure")
-    except requests.exceptions.ConnectionError:
-        print("Failed to connect to server")
-        print("Given URL: " + url)
-        raise Exception("Request Failure")
-    except requests.exceptions.Timeout:
-        print("Request timed out")
-        print("Given URL: " + url)
-        raise Exception("Request Failure")
-    except requests.exceptions.RequestException as e:
-        print("Other request error:", e)
-        print("Given URL: " + url)
-        raise Exception("Request Failure: " + e)
+        response = session.get(url, timeout=10)
+    except Exception as e:
+        raise Exception("Failed to get Response from Session" + str(e))
 
-    response.raise_for_status() # Raises an exception if it gets an unexpected status code like "404 Not Found"
-
+    try:
+        response.raise_for_status() # Raises an exception if it gets an unexpected status code like "404 Not Found"
+    except Exception as e:
+        print("Response status flag")
+        print("Error Message: ", e)
+        raise Exception("Response Status flag")
+    
     response.encoding = "utf-8"
     try:
         soup = BeautifulSoup(response.text, "html.parser")
     except Exception as e:
-        raise Exception("Soup Failed: " + e)
+        raise Exception("Soup Failed: ", e)
 
     return soup
+
+# getSoupRetry - Calls getSoup(), and if it fails, retries the given number of times
+# Parameters:
+#       string url - The url from which a soup will be got. I am a poet
+#       session - This is used to get a repsonse from the site.
+#       retryNum - The number of times the program is willing to retry getSoupRetry
+# Returns the soup
+def getSoupRetry(url, session, retryNum):
+    for attempt in range(retryNum):
+        try:
+            return getSoup(url, session)
+        except Exception as e:
+            print("Failed to get soup in getSoupRetry().")
+            print("Error Message: ", e)
+            time.sleep(random.uniform(0.5, 1.5))
+    else:
+        raise Exception("Failed to get soup after " + retryNum + " attempts")
 
 # incrementPageUrl - changes the pageUrl based on the new pageNum
 # Parameters:
@@ -169,7 +175,7 @@ def getBooksFromPage(soup):
 # Returns: Nothing
 def makeWorkBookSheet(bookObjs, pageNum, sheet):
     # Making the sheet:
-    sheet.title = str(pageNum) + "pages of books"
+    sheet.title = str(pageNum) + " pages of books"
 
     sheet.append(["", ""])
     sheet.append(["Page: " + str(pageNum), ""])
@@ -183,35 +189,36 @@ def makeWorkBookSheet(bookObjs, pageNum, sheet):
         sheet.append(book.getRowOfData())
 
 # getUserInput - Gets the user input for how many pages the program will look through
-# Parameters: None
+# Parameters:
+#       pageUrl - Used to figure out the total number of pages on the site
 # Returns: The number of pages the user wants to scrape from. -1 If the user wants to quit 
-def getUserInput(pageUrl):
+def getUserInput(pageUrl, session):
     soup = None
+    # Get the soup of the page:
     try:
-        soup = getSoup(pageUrl)
-    except Exception as e:
-        raise Exception("Soup Failed: " + e)
+        soup = getSoupRetry(pageUrl, session, numOfRetries)
+    except:
+        raise Exception("Failed to get soup for userInput")
 
     numOfPages = getNumberOfPages(soup)
 
     if (numOfPages == None):
         raise Exception("Failed to get Pages: Returned None.")
-    if (numOfPages < 0):
+    elif (numOfPages < 0):
         raise Exception("Failed to get Pages: Out of range.")
 
     print("Total Number of pages: " + str(numOfPages))
 
     userInput = -1
     while (userInput < 0 or userInput > numOfPages):
-        print("\nInput 0 to leave the program")
-        userInput = input("How many pages do you want to scrape?: ")
+        userInput = input("How many pages do you want to scrape?\n(Input 0 to exit the program): ")
         try:
             userInput = int(userInput)
             if (userInput < 0 or userInput > numOfPages):
-                print("That number is out of range. Please try again")
+                print("That number is out of range. Please try again.\n")
         except:
-            print("That is not a valid number. Please try again")
-            userInput = -1 # Setting it to -1 so the while loop starts over
+            print("That is not a valid number. Please try again.\n")
+            userInput = -1 # Setting it to -1 so the while loop starts over properly
 
     return userInput
 
@@ -226,74 +233,93 @@ def savePageToWorkbook(workbook, page, pageNumber):
 
     makeWorkBookSheet(page, pageNumber, sheet)
 
-# - - - [ Variables:  ] - - - 
-pageUrl = "https://books.toscrape.com"  # The URL of the page we are currently on
-numOfPages = getUserInput(pageUrl)      # Gets user input for the number of pages to scrape data from
-workBook = Workbook()                   # Workbook for saving the data into an excel doc
-pageNum = 1                             # The page number of the page we are currently on
-# - - - - - - - - - - - - - - 
+def main():
+    # Start a session:
+    session = requests.Session();
 
-# -- -- --[  Constants:  ]-- -- --
-lengthOfBar = 30                        # The length of the loading bar
-outputFileName = "outPutFile"           # The name of the ouputfiles
-# -- -- -- -- -- -- -- -- -- -- --
+    # Make session look more human:
+    session.headers.update({
+        "User-Agent": "Mozilla/5.0"
+    })
 
+    # - - - [ Variables:  ] - - - 
+    pageUrl = "https://books.toscrape.com"      # The URL of the page we are currently on
+    numOfPages = getUserInput(pageUrl, session) # Gets user input for the number of pages to scrape data from
+    workBook = Workbook()                       # Workbook for saving the data into an excel doc
+    pageNum = 1                                 # The page number of the page we are currently on
+    # - - - - - - - - - - - - - - 
 
-if (numOfPages != 0):
-    print("Scraping from pages.")
-    print("|" + "-"*lengthOfBar + "|  (0 / " + str(numOfPages) + ")", end="\r")
+    # If the number of pages is 0, then the user wants to exit the program:
+    if (numOfPages == 0):
+        return;
 
-    # Loop through each page:
-    for index in range(0, numOfPages):
-        # Get the soup of the page:
-        try:
-            soup = getSoup(pageUrl)
-        except Exception as e:
-            print("Soup encountered exception: " + e)
-            continue # Move on to next page if the soup fails
-            # ToDo: Add Retry logic here
-
-        # Get the books from the current page
-        thisPage = getBooksFromPage(soup)
-
-        # If we got stuff from this page:
-        if (thisPage != None):
-            # Then push the books from this page to the pages array of arrays:
-            #pages.append(thisPage)
-
-            savePageToWorkbook(workBook, thisPage, pageNum)
-
-            # Now the url is incremented
+    if (numOfPages != 0):
+        print("Scraping from pages.")
+        print("|" + "-"*lengthOfBar + "|  (0 / " + str(numOfPages) + ")", end="\r")
+        # Loop through each page:
+        for index in range(0, numOfPages):
+            # Get the soup of the page:
             try:
-                pageUrl = incrementPageUrl(pageUrl, soup)
-            except Exception as e:
-                print("Failed to get next page url")
-                print("Error: " + e)
-                break
-                # ToDo: Add retry logic to refresh the page/soup and try incrementPageUrl() again.
+                soup = getSoupRetry(pageUrl, session, numOfRetries)
+            except:
+                print("Failed to get soup, first soup")
+                return
 
-            pageNum += 1
+            # Get the books from the current page
+            thisPage = getBooksFromPage(soup)
 
-            # And we update the loading bar:
-            numOfEquals = int((lengthOfBar/numOfPages) * (index + 1))
-            numOfDashes = lengthOfBar - numOfEquals
-            print("|" + "="*numOfEquals + "-"*numOfDashes + "|  (" + str(index + 1) + " / " + str(numOfPages) + ")", end="\r")
-        else:
-            print("Failed to get books from page " + str(index + 1) + ".")
+            # If we got stuff from this page:
+            if (thisPage != None):
+                # Then push the books from this page to the pages array of arrays:
+                #pages.append(thisPage)
 
-    print("\n")
+                savePageToWorkbook(workBook, thisPage, pageNum)
+ 
+                for attempt in range(numOfRetries):
+                    try:
+                        pageUrl = incrementPageUrl(pageUrl, soup)
+                        break
+                    except Exception as e:
+                        print("Failed to increment page: ERROR: ", e)
+                        try:
+                            soup = getSoupRetry(pageUrl, session, numOfRetries)
+                        except:
+                            print("Failed to get soup, second soup")
+                            return
+                else:
+                    # If we go through all our attempts, and still cant increment the page, just give up
+                    return
+                    
 
-# Save to an excel document
-folderPath = "~/WindowsSucks"   # Linux/WSL file path
-folderPath = os.path.expanduser(folderPath)
+                pageNum += 1
 
-# Create folder if it doesn't exist
-os.makedirs(folderPath, exist_ok=True)
+                # And we update the loading bar:
+                numOfEquals = int((lengthOfBar/numOfPages) * (index + 1))
+                numOfDashes = lengthOfBar - numOfEquals
+                print("|" + "="*numOfEquals + "-"*numOfDashes + "|  (" + str(index + 1) + " / " + str(numOfPages) + ")", end="\r")
+            else:
+                print("Failed to get books from page " + str(index + 1) + ".")
+            
+            # Rate Limit:
+            time.sleep(random.uniform(0.5, 1.5))
 
-#excelDocName = folderPath + outputFileName + ".xlsx"
-excelDocName = os.path.join(folderPath, outputFileName + ".xlsx")
+        print("\n")
 
-print("Saving to: " + excelDocName)
-workBook.save(excelDocName)
+    # Save to an excel document
+    folderPath = "~/WindowsSucks"   # Linux/WSL file path
+    folderPath = os.path.expanduser(folderPath)
 
+    # Create folder if it doesn't exist
+    os.makedirs(folderPath, exist_ok=True)
+
+    #excelDocName = folderPath + outputFileName + ".xlsx"
+    excelDocName = os.path.join(folderPath, outputFileName + ".xlsx")
+
+    print("Saving to: " + excelDocName)
+    workBook.save(excelDocName)
+    return;
+
+# Calling the main function to start the program:
+print("Starting Program")
+main()
 print("Thank you for using this program!")
