@@ -9,7 +9,8 @@ Improvements:
     13. Make congig folder
 
     Lastly. Once the scraper technicaly works, figure out all the "good product" stuff.
-        Lastly. How would a customer run it? And what output would they actualy see?
+            - How would a customer run it? 
+            - And what output would they actualy see?
 """
 
 # - - - - - -[ Liberaries: ]- - - - - -
@@ -277,9 +278,6 @@ def scrapePages(numOfPages, session, pageUrl, pageNum, workBook):
 
     # Loop through each page:
     for index in range(0, numOfPages):
-        
-        if (pageNum == 3):
-            pageUrl = "Wabe"
 
         # Get the soup of the page:
         try:
@@ -377,7 +375,7 @@ def savingToExcelDoc(workBook):
 # main - One function to rule them all
 # Parameters: None
 # Returns: void
-# Error Handling: Doesn't Log. Raises informative exceptions
+# Error Handling: Logs Info. Raises informative exceptions
 def main():
     # Clearing the terminal:
     os.system("clear")
