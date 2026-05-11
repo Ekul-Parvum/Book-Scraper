@@ -1,0 +1,6 @@
+2026-05-11 11:00:08,176 [INFO] Program has started and logging is configured
+2026-05-11 11:00:12,856 [WARNING] Attempt 1/3 to get soup of current page failed: Failed to get Response from SessionInvalid URL 'Wabe': No scheme supplied. Perhaps you meant https://Wabe?
+2026-05-11 11:00:14,322 [WARNING] Attempt 2/3 to get soup of current page failed: Failed to get Response from SessionInvalid URL 'Wabe': No scheme supplied. Perhaps you meant https://Wabe?
+2026-05-11 11:00:15,425 [WARNING] Attempt 3/3 to get soup of current page failed: Failed to get Response from SessionInvalid URL 'Wabe': No scheme supplied. Perhaps you meant https://Wabe?
+2026-05-11 11:00:16,155 [ERROR] Failed to get soup at page 3. Failed to get soup after 3 attempts. 
+2026-05-11 11:00:16,193 [INFO] End of program.
