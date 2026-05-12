@@ -5,8 +5,6 @@
 Improvements:
 
     7. CSV and JSON exports as well
-    
-    13. Make congig folder
 
     Lastly. Once the scraper technicaly works, figure out all the "good product" stuff.
             - How would a customer run it? 
@@ -15,175 +13,36 @@ Improvements:
 
 # - - - - - -[ Liberaries: ]- - - - - -
 import requests                 # For getting html data from sites
-from bs4 import BeautifulSoup   # For formating the html data in a way that is nice to work with
+
+# For saving/formating data into Excel, JSON, and CSV:
 from openpyxl import Workbook   # For working with excel
+
 from urllib.parse import urljoin# Has some functions to make working with urls easy
 import os                       # For handling filesystem stuff
+
 import time                     # For deleys
 import random                   # For random number generator
+
 import logging                  # For loging errors.
 # - - - - - - - - - - - - - - - - - - -
 
 # -/- -/- -/-[ Files I made: ]-\- -\- -\-
-from book import Book           # For storing data on the books
+import scraper.networking as networking
+import config.config as config                   # Config File - has all my constants/settings
 # -\- -\- -\- -\- -\- -/- -/- -/- -/- -/-
-
-# -- -- --[  Constants:  ]-- -- --
-lengthOfBar = 30                        # The length of the loading bar
-outputFileName = "outPutFile"           # The name of the ouputfiles
-numOfRetries = 3                        # The number of times the program should try getting the soup of a page before giving up.
-# -- -- -- -- -- -- -- -- -- -- --
 
 # configLogs - sets up the configs for logging stuff
 # Parameters: None
 # Returns: void
 def configLogs():
     logging.basicConfig(
-        filename="scraper.log",
+        filename="logs/scraper.log",
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s"
     )
     logging.info("Program has started and logging is configured")
 
-# getSoup - Gets the soup for the given url
-# Parameters:
-#       string url - The url from which a soup will be got. I am a poet
-#       session - This is used to get a repsonse from the site.
-# Returns the soup - There are a TON of exceptions in here, so if this method runs successfully, you can trust it returns a functional soup
-# Error Handling: Doesn't Log. Raises informative Exception.
-def getSoup(url, session):
-    try:
-        response = session.get(url, timeout=10)
-    except Exception as e:
-        raise Exception("Failed to get Response from Session" + str(e))
-
-    try:
-        response.raise_for_status() # Raises an exception if it gets an unexpected status code like "404 Not Found"
-    except Exception as e:
-        raise Exception(f"Response Status flag: {e}")
-    
-    response.encoding = "utf-8"
-    try:
-        soup = BeautifulSoup(response.text, "html.parser")
-    except Exception as e:
-        raise Exception(f"Soup Failed: {e}")
-
-    return soup
-
-# getSoupRetry - Calls getSoup(), and if it fails, retries the given number of times
-# Parameters:
-#       string url - The url from which a soup will be got. I am a poet
-#       session - This is used to get a repsonse from the site.
-#       retryNum - The number of times the program is willing to retry getSoupRetry
-# Returns the soup
-# Error Handling: Logs Warnings internaly. Raises informative Exception.
-def getSoupRetry(url, session, retryNum):
-    for attempt in range(retryNum):
-        try:
-            return getSoup(url, session)
-        except Exception as e:
-            logging.warning(f"Attempt {attempt + 1}/{retryNum} to get soup of current page failed: {e}")
-            time.sleep(random.uniform(0.5, 1.5))
-    else:
-        raise Exception(f"Failed to get soup after {retryNum} attempts. ")
-
-# incrementPageUrl - changes the pageUrl based on the new pageNum
-# Parameters:
-#       currentUrl - The url we are currently on
-# Returns string - The currentUrl with the given page num in it.
-# Error Handling: Doesn't Log. Raises informative Exceptions.
-def incrementPageUrl(currentUrl, soup):
-    # find the link in the next button on the page. 
-    nextButton = soup.find("li", class_="next")
-    
-    if (nextButton):
-        nextPage = nextButton.find("a")["href"]
-        nextUrl = urljoin(currentUrl, nextPage)
-        return nextUrl
-    else:
-        raise Exception("Could not find Next Button with the next page URL")
-
-# getNumberOfPages - Gets the number of pages of books in the website
-# Parameters:
-#       soup - The soup of the page it will search for the page num in
-# Returns int - The number of pages. None if it failed to get a number
-# Error Handling: Errors acounted for in return value
-def getNumberOfPages(soup):
-    # This will be the text in the <li> tag that has the page number
-    pageOfText = soup.find("ul", class_="pager")
-
-    if (pageOfText): # Checking that it found the <ul class="pager">
-        pageOfText = pageOfText.find("li", class_="current")
-        if (pageOfText): # Checking that it found the <li class="current">
-            pageOfText = pageOfText.text
-        else:
-            return None # Return none of it could not find pageOfText
-    else:
-        return None # Return none of it could not find pageOfText
-    
-    # Assuming it found pageOfText, then we can start parsing it for the page number
-    # The pageOfText should have something like "Page 1 of 50" or something.
-
-    try:
-        numOfPages = int(pageOfText.split()[-1])
-        # This uses negative indexing, so yes, we are looking of the -1 index of the sequence.
-        # That should be the last "word" in the pageOfText string, which should be the number of pages.
-    except:
-        return None
-    
-    if (numOfPages != -1):
-        return numOfPages
-    return None
-
-# printBooks - Prints all the books in the given array of books
-# Paremeters:
-#       bookObjs - Array of books to print
-# Returns nothing
-# Error Handling: None
-def printBooks(bookObjs):
-    for book in bookObjs:
-        print("----------------------")
-        print("Title: " + book.title)
-        print("Price: " + book.price)
-    print("----------------------")
-
-# getBooksFromPage - Formats all the books in the given URL into book objects
-# Paremeters:
-#       soup - The soup of the page to be searched for books
-# Returns: Array of books found at the given URL. Returns -1 if it failed. Returns none if no books were found.
-# Error Handling: Errors acounted for in return value
-def getBooksFromPage(soup):
-    # Find all the books
-    booksHtml = soup.find_all("article", class_="product_pod")
-
-    # Books array:
-    bookObjs = []
-
-    for bookHtml in booksHtml:
-
-        title_tag = bookHtml.select_one("h3 a")
-        price_tag = bookHtml.select_one("p.price_color")
-
-        # Checking that there is a title tag and price tag
-        if (title_tag and price_tag):
-            title = title_tag.get("title")
-            # Note: tag["title"] would crash if there is no title, while .get("title") would return None
-
-            # Checking that there is a title in the title_tag
-            if (title):
-                # Finaly, actualy puting the book data into a book object and into the bookObjs array
-                bookObjs.append(
-                    Book(
-                        title,
-                        price_tag.text
-                    )
-                )
-    
-    
-    if (len(bookObjs) <= 0):
-        return None
-    
-    return bookObjs
+# region Excel Functions
 
 # makeWorkBookSheet - Compiles all the given book objects into an excel sheet
 # Parameters:
@@ -207,6 +66,52 @@ def makeWorkBookSheet(bookObjs, pageNum, sheet):
     for book in bookObjs:
         sheet.append(book.getRowOfData())
 
+# savePageToWorkbook - Saves the given page to the given workbook
+# Parameters:
+#       workbook - The workbook which the page will be saved to
+#       page - the page to be saved
+#       pageNumber - The page number that we are on
+# Returns: Nothing directly, just modifies the workbook
+# Error Handling: None
+def savePageToWorkbook(workbook, page, pageNumber):
+    sheet = workbook.active
+
+    makeWorkBookSheet(page, pageNumber, sheet)
+
+# savingToExcelDoc - Saves the current workBook to an excel
+# Parameters:
+#       workBook - the workBook to be saved
+# Returns: void
+# Error Handling: Logs errors internaly, raises generic exception.
+def savingToExcelDoc(workBook):
+    # Save to an excel document
+    folderPath = "~/WindowsSucks"   # Linux/WSL file path
+    folderPath = os.path.expanduser(folderPath)
+
+    # Create folder if it doesn't exist
+    try:
+        os.makedirs(folderPath, exist_ok=True)
+    except Exception as e:
+        logging.error(f"Failed to make directory to save workbook. {e}")
+        raise Exception("Failed to save to Excel")
+
+    #excelDocName = folderPath + outputFileName + ".xlsx"
+    excelDocName = os.path.join(folderPath, config.outputFileName + ".xlsx")
+
+    print("Saving to: " + excelDocName)
+
+    try:
+        workBook.save(excelDocName)
+    except Exception as e:
+        logging.error(f"Faled to save workbook. {e}")
+        raise Exception("Failed to save to Excel")
+    
+    # Log where the workbook is saved to:
+    logging.info(f"Workbook saved to {excelDocName}")
+    return
+
+# endregion
+
 # getUserInput - Gets the user input for how many pages the program will look through
 # Parameters:
 #       pageUrl - Used to figure out the total number of pages on the site
@@ -216,11 +121,11 @@ def getUserInput(pageUrl, session):
     soup = None
     # Get the soup of the page:
     try:
-        soup = getSoupRetry(pageUrl, session, numOfRetries)
+        soup = networking.getSoupRetry(pageUrl, session, config.numOfRetries)
     except Exception as e:
         raise Exception(f"Failed to get soup for userInput. {e}")
 
-    numOfPages = getNumberOfPages(soup)
+    numOfPages = networking.getNumberOfPages(soup)
 
     if (numOfPages == None):
         raise Exception("Failed to get Pages: Returned None.")
@@ -244,18 +149,6 @@ def getUserInput(pageUrl, session):
 
     return userInput
 
-# savePageToWorkbook - Saves the given page to the given workbook
-# Parameters:
-#       workbook - The workbook which the page will be saved to
-#       page - the page to be saved
-#       pageNumber - The page number that we are on
-# Returns: Nothing directly, just modifies the workbook
-# Error Handling: None
-def savePageToWorkbook(workbook, page, pageNumber):
-    sheet = workbook.active
-
-    makeWorkBookSheet(page, pageNumber, sheet)
-
 # scrapePages - scrapes all the books from all the pages it needs to
 # Parameters:
 #       numOfPages - the number of pages it will scrape from
@@ -274,14 +167,14 @@ def scrapePages(numOfPages, session, pageUrl, pageNum, workBook):
 
     # Progress bar:
     print("Scraping from pages...")
-    print("|" + "-"*lengthOfBar + "|  (0 / " + str(numOfPages) + ")", end="\r")
+    print("|" + "-"*config.lengthOfBar + "|  (0 / " + str(numOfPages) + ")", end="\r")
 
     # Loop through each page:
     for index in range(0, numOfPages):
 
         # Get the soup of the page:
         try:
-            soup = getSoupRetry(pageUrl, session, numOfRetries)
+            soup = networking.getSoupRetry(pageUrl, session, config.numOfRetries)
         except Exception as e:
             # Log warning:
             logging.error(f"Failed to get soup at page {pageNum}. {e}")
@@ -289,7 +182,7 @@ def scrapePages(numOfPages, session, pageUrl, pageNum, workBook):
             return
 
         # Get the books from the current page
-        thisPage = getBooksFromPage(soup)
+        thisPage = networking.getBooksFromPage(soup)
 
         # If we got stuff from this page:
         if (thisPage != None):
@@ -297,16 +190,16 @@ def scrapePages(numOfPages, session, pageUrl, pageNum, workBook):
             savePageToWorkbook(workBook, thisPage, pageNum)
 
             # Increment the page:
-            for attempt in range(numOfRetries):
+            for attempt in range(config.numOfRetries):
                 try:
-                    pageUrl = incrementPageUrl(pageUrl, soup)
+                    pageUrl = networking.incrementPageUrl(pageUrl, soup)
                     break
                 except Exception as e:
                     logging.warning(f"Failed to increment page. {e}")
 
                     # Try reloading the page before attempting to increment again:
                     try:
-                        soup = getSoupRetry(pageUrl, session, numOfRetries)
+                        soup = networking.getSoupRetry(pageUrl, session, config.numOfRetries)
                     except Exception as e:
                         logging.error(f"Failed to get soup. {e}")
                         print(f"\nCan not reload page {pageNum}.\nCan not go further than page {pageNum - 1}.\nQuiting Program.")
@@ -322,8 +215,8 @@ def scrapePages(numOfPages, session, pageUrl, pageNum, workBook):
             pageNum += 1
 
             # And we update the loading bar:
-            numOfEquals = int((lengthOfBar/numOfPages) * (index + 1))
-            numOfDashes = lengthOfBar - numOfEquals
+            numOfEquals = int((config.lengthOfBar/numOfPages) * (index + 1))
+            numOfDashes = config.lengthOfBar - numOfEquals
             print("|" + "="*numOfEquals + "-"*numOfDashes + "|  (" + str(index + 1) + " / " + str(numOfPages) + ")", end="\r")
         else:
             # Log error for when getBooksFromPage() returns none:
@@ -340,37 +233,6 @@ def scrapePages(numOfPages, session, pageUrl, pageNum, workBook):
 
     return
 
-# savingToExcelDoc - Saves the current workBook to an excel
-# Parameters:
-#       workBook - the workBook to be saved
-# Returns: void
-# Error Handling: Logs errors internaly, raises generic exception.
-def savingToExcelDoc(workBook):
-    # Save to an excel document
-    folderPath = "~/WindowsSucks"   # Linux/WSL file path
-    folderPath = os.path.expanduser(folderPath)
-
-    # Create folder if it doesn't exist
-    try:
-        os.makedirs(folderPath, exist_ok=True)
-    except Exception as e:
-        logging.error(f"Failed to make directory to save workbook. {e}")
-        raise Exception("Failed to save to Excel")
-
-    #excelDocName = folderPath + outputFileName + ".xlsx"
-    excelDocName = os.path.join(folderPath, outputFileName + ".xlsx")
-
-    print("Saving to: " + excelDocName)
-
-    try:
-        workBook.save(excelDocName)
-    except Exception as e:
-        logging.error(f"Faled to save workbook. {e}")
-        raise Exception("Failed to save to Excel")
-    
-    # Log where the workbook is saved to:
-    logging.info(f"Workbook saved to {excelDocName}")
-    return
 
 # main - One function to rule them all
 # Parameters: None
