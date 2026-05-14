@@ -1,3 +1,5 @@
+# This file contains all the functions used to get html data from the site, and read through that data.
+
 import logging
 import time
 from bs4 import BeautifulSoup   # For formating the html data in a way that is nice to work with

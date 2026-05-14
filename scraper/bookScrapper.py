@@ -9,6 +9,7 @@ Improvements:
     Lastly. Once the scraper technicaly works, figure out all the "good product" stuff.
             - How would a customer run it? 
             - And what output would they actualy see?
+            - Surely they won't have to install all these python libraries, right?
 """
 
 # - - - - - -[ Liberaries: ]- - - - - -
@@ -28,7 +29,8 @@ import logging                  # For loging errors.
 
 # -/- -/- -/-[ Files I made: ]-\- -\- -\-
 import scraper.networking as networking
-import config.config as config                   # Config File - has all my constants/settings
+import config.config as config     
+import exporters.excel_exporter as excel_exporter              # Config File - has all my constants/settings
 # -\- -\- -\- -\- -\- -/- -/- -/- -/- -/-
 
 # configLogs - sets up the configs for logging stuff
@@ -41,76 +43,6 @@ def configLogs():
         format="%(asctime)s [%(levelname)s] %(message)s"
     )
     logging.info("Program has started and logging is configured")
-
-# region Excel Functions
-
-# makeWorkBookSheet - Compiles all the given book objects into an excel sheet
-# Parameters:
-#       bookObjs - Array of all the book objects to put into the exvel sheet
-#       pageNum - The page number the books are from, and the page this excel sheet will be
-#       sheet - The sheet object that the bookObjs will be put into.
-# Returns: Nothing
-# Error Handling: None
-def makeWorkBookSheet(bookObjs, pageNum, sheet):
-    # Making the sheet:
-    sheet.title = str(pageNum) + " pages of books"
-
-    sheet.append(["", ""])
-    sheet.append(["Page: " + str(pageNum), ""])
-    sheet.append(["", ""])
-
-    # Making a header:
-    sheet.append(["Title", "Price"])
-
-    # Looping through each book:
-    for book in bookObjs:
-        sheet.append(book.getRowOfData())
-
-# savePageToWorkbook - Saves the given page to the given workbook
-# Parameters:
-#       workbook - The workbook which the page will be saved to
-#       page - the page to be saved
-#       pageNumber - The page number that we are on
-# Returns: Nothing directly, just modifies the workbook
-# Error Handling: None
-def savePageToWorkbook(workbook, page, pageNumber):
-    sheet = workbook.active
-
-    makeWorkBookSheet(page, pageNumber, sheet)
-
-# savingToExcelDoc - Saves the current workBook to an excel
-# Parameters:
-#       workBook - the workBook to be saved
-# Returns: void
-# Error Handling: Logs errors internaly, raises generic exception.
-def savingToExcelDoc(workBook):
-    # Save to an excel document
-    folderPath = "~/WindowsSucks"   # Linux/WSL file path
-    folderPath = os.path.expanduser(folderPath)
-
-    # Create folder if it doesn't exist
-    try:
-        os.makedirs(folderPath, exist_ok=True)
-    except Exception as e:
-        logging.error(f"Failed to make directory to save workbook. {e}")
-        raise Exception("Failed to save to Excel")
-
-    #excelDocName = folderPath + outputFileName + ".xlsx"
-    excelDocName = os.path.join(folderPath, config.outputFileName + ".xlsx")
-
-    print("Saving to: " + excelDocName)
-
-    try:
-        workBook.save(excelDocName)
-    except Exception as e:
-        logging.error(f"Faled to save workbook. {e}")
-        raise Exception("Failed to save to Excel")
-    
-    # Log where the workbook is saved to:
-    logging.info(f"Workbook saved to {excelDocName}")
-    return
-
-# endregion
 
 # getUserInput - Gets the user input for how many pages the program will look through
 # Parameters:
@@ -187,7 +119,7 @@ def scrapePages(numOfPages, session, pageUrl, pageNum, workBook):
         # If we got stuff from this page:
         if (thisPage != None):
             # Then push the books from this page into the workbook:
-            savePageToWorkbook(workBook, thisPage, pageNum)
+            excel_exporter.savePageToWorkbook(workBook, thisPage, pageNum)
 
             # Increment the page:
             for attempt in range(config.numOfRetries):
@@ -278,7 +210,7 @@ def main():
     
 
     try:
-        savingToExcelDoc(workBook)
+        excel_exporter.savingToExcelDoc(workBook)
     except:
         print("Failed to save to Excel")
 
