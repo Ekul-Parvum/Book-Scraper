@@ -82,6 +82,10 @@ def getUserInput(pageUrl, session):
 
     return userInput
 
+# generateFileOutputPath - Generates a file path to the folder where the output files will go.
+# Parameters: None
+# Returns: the folder path to the output folder as a string
+# Error Handling: Logs errors. raises informative exception.
 def generateFileOutputPath():
     folderPath = os.path.expanduser(config.outputFilePath)
     
@@ -229,7 +233,10 @@ def main():
         return
 
     # Find/Generate the output folder:
-    outputFolderPath = generateFileOutputPath()
+    try:
+        outputFolderPath = generateFileOutputPath()
+    except Exception as e:
+        raise Exception(f"Failed to find/Generate folder for output files: {e}")
 
     # Try to scrape pages:
     try:
