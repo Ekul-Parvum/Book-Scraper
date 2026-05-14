@@ -15,10 +15,9 @@ Improvements:
 # - - - - - -[ Liberaries: ]- - - - - -
 import requests                 # For getting html data from sites
 
-# For saving/formating data into Excel, JSON, and CSV:
 from openpyxl import Workbook   # For working with excel
+import csv
 
-from urllib.parse import urljoin# Has some functions to make working with urls easy
 import os                       # For handling filesystem stuff
 
 import time                     # For deleys
@@ -29,8 +28,10 @@ import logging                  # For loging errors.
 
 # -/- -/- -/-[ Files I made: ]-\- -\- -\-
 import scraper.networking as networking
-import config.config as config     
-import exporters.excel_exporter as excel_exporter              # Config File - has all my constants/settings
+import config.config as config          # Config File - has all my constants/settings
+
+import exporters.excel_exporter as excel_exporter
+import exporters.csv_exporter as csv_exporter
 # -\- -\- -\- -\- -\- -/- -/- -/- -/- -/-
 
 # configLogs - sets up the configs for logging stuff
@@ -81,6 +82,18 @@ def getUserInput(pageUrl, session):
 
     return userInput
 
+def generateFileOutputPath():
+    folderPath = os.path.expanduser(config.outputFilePath)
+    
+    # Create folder if it doesn't exist
+    try:
+        os.makedirs(folderPath, exist_ok=True)
+    except Exception as e:
+        logging.error(f"Failed to make directory to save output files. {e}")
+        raise Exception("Failed to generate directory")
+    
+    return folderPath
+
 # scrapePages - scrapes all the books from all the pages it needs to
 # Parameters:
 #       numOfPages - the number of pages it will scrape from
@@ -90,7 +103,7 @@ def getUserInput(pageUrl, session):
 #       workBook - for saving book data to excel
 # Returns - Nothing, just saves stuff to the workBook
 # Error Handling: Logs errors and warnings internaly, raises generic exception.
-def scrapePages(numOfPages, session, pageUrl, pageNum, workBook):
+def scrapePages(numOfPages, session, pageUrl, pageNum, workBook, outputFolderPath):
     # Clear the terminal:
     os.system("clear")
 
@@ -101,61 +114,75 @@ def scrapePages(numOfPages, session, pageUrl, pageNum, workBook):
     print("Scraping from pages...")
     print("|" + "-"*config.lengthOfBar + "|  (0 / " + str(numOfPages) + ")", end="\r")
 
-    # Loop through each page:
-    for index in range(0, numOfPages):
-
-        # Get the soup of the page:
-        try:
-            soup = networking.getSoupRetry(pageUrl, session, config.numOfRetries)
-        except Exception as e:
-            # Log warning:
-            logging.error(f"Failed to get soup at page {pageNum}. {e}")
-            print(f"\nCan not load page {pageNum}.\nCan not go further than page {pageNum - 1}.\nQuiting Program.")
-            return
-
-        # Get the books from the current page
-        thisPage = networking.getBooksFromPage(soup)
-
-        # If we got stuff from this page:
-        if (thisPage != None):
-            # Then push the books from this page into the workbook:
-            excel_exporter.savePageToWorkbook(workBook, thisPage, pageNum)
-
-            # Increment the page:
-            for attempt in range(config.numOfRetries):
-                try:
-                    pageUrl = networking.incrementPageUrl(pageUrl, soup)
-                    break
-                except Exception as e:
-                    logging.warning(f"Failed to increment page. {e}")
-
-                    # Try reloading the page before attempting to increment again:
-                    try:
-                        soup = networking.getSoupRetry(pageUrl, session, config.numOfRetries)
-                    except Exception as e:
-                        logging.error(f"Failed to get soup. {e}")
-                        print(f"\nCan not reload page {pageNum}.\nCan not go further than page {pageNum - 1}.\nQuiting Program.")
-                        return
-            else:
-                # If we go through all our attempts, and still cant increment the page, just give up
-                logging.error(f"All attempts to increment page {pageNum} have failed. Returning to main")
-                # Need to let user know we can't go any further:
-                print(f"\nCan not find URL to page {pageNum}.\nCan not go further than page {pageNum - 1}.\nQuiting Program.")
-                return
-                
-            # Keep track of what page number we are on:
-            pageNum += 1
-
-            # And we update the loading bar:
-            numOfEquals = int((config.lengthOfBar/numOfPages) * (index + 1))
-            numOfDashes = config.lengthOfBar - numOfEquals
-            print("|" + "="*numOfEquals + "-"*numOfDashes + "|  (" + str(index + 1) + " / " + str(numOfPages) + ")", end="\r")
-        else:
-            # Log error for when getBooksFromPage() returns none:
-            logging.warning("Failed to get books from page " + str(index + 1) + ".")
+    # Open/make the csvFile:
+    with open(csv_exporter.generateCsvFilePath(outputFolderPath), "w") as csvFile:
         
-        # Rate Limit:
-        time.sleep(random.uniform(0.5, 1.5))
+        # --/ --/ --[ CSV File stuff: ]-- \-- \--
+        # Writer to write data to csv file:
+        csvWriter = csv.writer(csvFile)
+        # --\ --\ --\ --\ --\|/-- /-- /-- /-- /--
+
+        # Loop through each page:
+        for index in range(0, numOfPages):
+
+            # Get the soup of the page:
+            try:
+                soup = networking.getSoupRetry(pageUrl, session, config.numOfRetries)
+            except Exception as e:
+                # Log warning:
+                logging.error(f"Failed to get soup at page {pageNum}. {e}")
+                print(f"\nCan not load page {pageNum}.\nCan not go further than page {pageNum - 1}.\nQuiting Program.")
+                return
+
+            # Get the books from the current page
+            thisPage = networking.getBooksFromPage(soup)
+
+            # If we got stuff from this page:
+            if (thisPage != None):
+                # Then push the books from this page into the workbook:
+                excel_exporter.savePageToWorkbook(workBook, thisPage, pageNum)
+
+                # Save to the csv file:
+                csv_exporter.savePageToCSV(thisPage, csvWriter)
+
+                # Increment the page:
+                for attempt in range(config.numOfRetries):
+                    try:
+                        pageUrl = networking.incrementPageUrl(pageUrl, soup)
+                        break
+                    except Exception as e:
+                        logging.warning(f"Failed to increment page. {e}")
+
+                        # Try reloading the page before attempting to increment again:
+                        try:
+                            soup = networking.getSoupRetry(pageUrl, session, config.numOfRetries)
+                        except Exception as e:
+                            logging.error(f"Failed to get soup. {e}")
+                            print(f"\nCan not reload page {pageNum}.\nCan not go further than page {pageNum - 1}.\nQuiting Program.")
+                            return
+                else:
+                    # If we go through all our attempts, and still cant increment the page, just give up
+                    logging.error(f"All attempts to increment page {pageNum} have failed. Returning to main")
+                    # Need to let user know we can't go any further:
+                    print(f"\nCan not find URL to page {pageNum}.\nCan not go further than page {pageNum - 1}.\nQuiting Program.")
+                    return
+                    
+                # Keep track of what page number we are on:
+                pageNum += 1
+
+                # And we update the loading bar:
+                numOfEquals = int((config.lengthOfBar/numOfPages) * (index + 1))
+                numOfDashes = config.lengthOfBar - numOfEquals
+                print("|" + "="*numOfEquals + "-"*numOfDashes + "|  (" + str(index + 1) + " / " + str(numOfPages) + ")", end="\r")
+            else:
+                # Log error for when getBooksFromPage() returns none:
+                logging.warning("Failed to get books from page " + str(index + 1) + ".")
+            
+            # Rate Limit:
+            time.sleep(random.uniform(0.5, 1.5))
+
+            # End of for loop
+        # End of csv file being open
 
     # Move down a line so that we don't print over the loading bar:
     print("\n")
@@ -201,16 +228,20 @@ def main():
         logging.info("User is quiting the program")
         return
 
+    # Find/Generate the output folder:
+    outputFolderPath = generateFileOutputPath()
+
     # Try to scrape pages:
     try:
-        scrapePages(numOfPages, session, pageUrl, pageNum, workBook)
+        scrapePages(numOfPages, session, pageUrl, pageNum, workBook, outputFolderPath)
     except Exception as e:
         # Raising exception:
         raise Exception(f"Failed to scape books: {e}")
     
-
+    # Saving stuff:
+    # Saving Excel
     try:
-        excel_exporter.savingToExcelDoc(workBook)
+        excel_exporter.savingToExcelDoc(workBook, outputFolderPath)
     except:
         print("Failed to save to Excel")
 

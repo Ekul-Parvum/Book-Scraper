@@ -8,3 +8,27 @@
 2026-05-14 10:06:10,489 [INFO] Scrape completed smoothly
 2026-05-14 10:06:10,542 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFile.xlsx
 2026-05-14 10:06:10,544 [INFO] End of program.
+2026-05-14 10:43:45,411 [INFO] Program has started and logging is configured
+2026-05-14 10:43:48,100 [INFO] Starting to scrape 4 pages from https://books.toscrape.com.
+2026-05-14 10:43:52,006 [INFO] Scrape completed smoothly
+2026-05-14 10:43:52,049 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFile.xlsx
+2026-05-14 10:43:52,052 [INFO] End of program.
+2026-05-14 10:50:31,947 [INFO] Program has started and logging is configured
+2026-05-14 10:50:34,025 [INFO] Starting to scrape 3 pages from https://books.toscrape.com.
+2026-05-14 10:50:37,612 [INFO] Scrape completed smoothly
+2026-05-14 10:50:37,643 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFile.xlsx
+2026-05-14 10:50:37,645 [INFO] End of program.
+2026-05-14 10:53:10,508 [INFO] Program has started and logging is configured
+2026-05-14 10:53:13,045 [INFO] Starting to scrape 6 pages from https://books.toscrape.com.
+2026-05-14 10:53:13,045 [ERROR] Main() ran into an error: Failed to scape books: generateCsvFilePath() missing 1 required positional argument: 'outputFolderPath'
+2026-05-14 10:53:13,046 [INFO] End of program.
+2026-05-14 10:53:54,772 [INFO] Program has started and logging is configured
+2026-05-14 10:53:57,379 [INFO] Starting to scrape 8 pages from https://books.toscrape.com.
+2026-05-14 10:54:06,446 [INFO] Scrape completed smoothly
+2026-05-14 10:54:06,474 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFile.xlsx
+2026-05-14 10:54:06,476 [INFO] End of program.
+2026-05-14 10:55:24,468 [INFO] Program has started and logging is configured
+2026-05-14 10:55:29,850 [INFO] Starting to scrape 7 pages from https://books.toscrape.com.
+2026-05-14 10:55:37,282 [INFO] Scrape completed smoothly
+2026-05-14 10:55:37,323 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFileEXCEL.xlsx
+2026-05-14 10:55:37,324 [INFO] End of program.

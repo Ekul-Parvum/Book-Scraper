@@ -34,6 +34,7 @@ def makeWorkBookSheet(bookObjs, pageNum, sheet):
 # Returns: Nothing directly, just modifies the workbook
 # Error Handling: None
 def savePageToWorkbook(workbook, page, pageNumber):
+    # Setting sheet to the currenlty active sheet:
     sheet = workbook.active
 
     makeWorkBookSheet(page, pageNumber, sheet)
@@ -43,20 +44,10 @@ def savePageToWorkbook(workbook, page, pageNumber):
 #       workBook - the workBook to be saved
 # Returns: void
 # Error Handling: Logs errors internaly, raises generic exception.
-def savingToExcelDoc(workBook):
-    # Save to an excel document
-    folderPath = "~/WindowsSucks"   # Linux/WSL file path
-    folderPath = os.path.expanduser(folderPath)
-
-    # Create folder if it doesn't exist
-    try:
-        os.makedirs(folderPath, exist_ok=True)
-    except Exception as e:
-        logging.error(f"Failed to make directory to save workbook. {e}")
-        raise Exception("Failed to save to Excel")
+def savingToExcelDoc(workBook, outputFolderPath):
 
     #excelDocName = folderPath + outputFileName + ".xlsx"
-    excelDocName = os.path.join(folderPath, config.outputFileName + ".xlsx")
+    excelDocName = os.path.join(outputFolderPath, config.outputFileName + "EXCEL.xlsx")
 
     print("Saving to: " + excelDocName)
 
