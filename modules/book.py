@@ -10,3 +10,8 @@ class Book:
     def getRowOfData(self):
         return [str(self.title), str(self.price)]
     
+    def getDictionaryOfBook(self):
+        return {
+            "title": self.title,
+            "price": self.price
+        }
