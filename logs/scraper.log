@@ -52,3 +52,8 @@
 2026-05-17 10:31:21,222 [INFO] Scrape completed smoothly
 2026-05-17 10:31:21,252 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFileEXCEL.xlsx
 2026-05-17 10:31:21,253 [INFO] End of program.
+2026-05-17 10:50:24,854 [INFO] Program has started and logging is configured
+2026-05-17 10:50:33,499 [INFO] Starting to scrape 3 pages from https://books.toscrape.com.
+2026-05-17 10:50:39,980 [INFO] Scrape completed smoothly
+2026-05-17 10:50:40,014 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFileEXCEL.xlsx
+2026-05-17 10:50:40,016 [INFO] End of program.

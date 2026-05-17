@@ -1,0 +1,19 @@
+To compile a python project into one executable:
+    $ pyinstaller --onefile [projectYouAreWorkingIn]/src.py
+    - This will make an executable in [projectYouAreWorkingIn]/dist.
+    - Note that the executable should be moved up into [projectYouAreWorkingIn] if you want that to be your root.
+
+Making requirements.txt:
+    $ pip freeze > requirements.txt
+    - While in the .venv with all the libraries the project uses
+
+Using Python Environment:
+    To make a new environment:
+            $ python -m venv .venv
+            - While in the project it is for
+    To activate the environment:
+            $ source ~/CodingWSLEnvironment/[projectYouAreWorkingIn]/.venv/bin/activate
+    To deactivate the environment:
+            $ deactivate
+    To install a library:
+            $ ~/CodingWSLEnvironment/[projectYouAreWorkingIn]/.venv/bin/pip install [LIBRARY NAME]
