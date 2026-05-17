@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup   # For formating the html data in a way that is n
 import random
 from urllib.parse import urljoin# Has some functions to make working with urls easy
 from modules.book import Book
+import config.config as config
 
 # region navigting the site Functions
 
@@ -66,6 +67,28 @@ def incrementPageUrl(currentUrl, soup):
         return nextUrl
     else:
         raise Exception("Could not find Next Button with the next page URL")
+
+def incrementPageUrlRetry(pageUrl, soup, session, pageNum):
+    for attempt in range(config.numOfRetries):
+        try:
+            pageUrl = incrementPageUrl(pageUrl, soup)
+            break
+        except Exception as e:
+            logging.warning(f"Failed to increment page. {e}")
+
+            # Try reloading the page before attempting to increment again:
+            try:
+                soup = getSoupRetry(pageUrl, session, config.numOfRetries)
+            except Exception as e:
+                logging.error(f"Failed to get soup. {e}")
+                print(f"\nCan not reload page {pageNum}.\nCan not go further than page {pageNum - 1}.\nQuiting Program.")
+                return
+    else:
+        # If we go through all our attempts, and still cant increment the page, just give up
+        logging.error(f"All attempts to increment page {pageNum} have failed. Returning to main")
+        # Need to let user know we can't go any further:
+        print(f"\nCan not find URL to page {pageNum}.\nCan not go further than page {pageNum - 1}.\nQuiting Program.")
+        return
 
 # getNumberOfPages - Gets the number of pages of books in the website
 # Parameters:
