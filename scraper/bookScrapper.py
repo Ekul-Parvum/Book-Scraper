@@ -3,11 +3,11 @@
 
 """ 
 Improvements:
-
-    Lastly. Once the scraper technicaly works, figure out all the "good product" stuff.
-            - How would a customer run it? 
-            - And what output would they actualy see?
-            - Surely they won't have to install all these python libraries, right?
+    1. Move config to .json
+    2. Update config so that there are less user inputs
+    3. Figure out what "bookScrapper.spec" is.
+    4. Put everything together into a simulated final product, with an executable and everything.
+    
 """
 
 # - - - - - -[ Liberaries: ]- - - - - -
