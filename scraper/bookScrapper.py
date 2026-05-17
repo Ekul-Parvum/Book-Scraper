@@ -6,7 +6,8 @@ Improvements:
     1. Move config to .json
     2. Update config so that there are less user inputs
     3. Figure out what "bookScrapper.spec" is.
-    4. Put everything together into a simulated final product, with an executable and everything.
+    4. Make ReadMe
+    5. Put everything together into a simulated final product, with an executable and everything.
     
 """
 
