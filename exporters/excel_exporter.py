@@ -3,8 +3,10 @@
 import os                       # For handling filesystem stuff
 import logging                  # For loging errors.
 import config.config as config                   # Config File - has all my constants/settings
-
-configJson = config.getConfigsFromJson()
+try:
+    configJson = config.getConfigsFromJson()
+except:
+    configJson = None
 
 # makeWorkBookSheet - Compiles all the given book objects into an excel sheet
 # Parameters:

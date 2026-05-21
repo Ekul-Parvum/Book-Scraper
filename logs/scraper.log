@@ -1,112 +1,55 @@
-2026-05-12 09:08:31,021 [INFO] Program has started and logging is configured
-2026-05-12 09:08:33,319 [INFO] Starting to scrape 3 pages from https://books.toscrape.com.
-2026-05-12 09:08:37,926 [INFO] Scrape completed smoothly
-2026-05-12 09:08:37,961 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFile.xlsx
-2026-05-12 09:08:37,962 [INFO] End of program.
-2026-05-14 10:05:39,913 [INFO] Program has started and logging is configured
-2026-05-14 10:05:45,068 [INFO] Starting to scrape 21 pages from https://books.toscrape.com.
-2026-05-14 10:06:10,489 [INFO] Scrape completed smoothly
-2026-05-14 10:06:10,542 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFile.xlsx
-2026-05-14 10:06:10,544 [INFO] End of program.
-2026-05-14 10:43:45,411 [INFO] Program has started and logging is configured
-2026-05-14 10:43:48,100 [INFO] Starting to scrape 4 pages from https://books.toscrape.com.
-2026-05-14 10:43:52,006 [INFO] Scrape completed smoothly
-2026-05-14 10:43:52,049 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFile.xlsx
-2026-05-14 10:43:52,052 [INFO] End of program.
-2026-05-14 10:50:31,947 [INFO] Program has started and logging is configured
-2026-05-14 10:50:34,025 [INFO] Starting to scrape 3 pages from https://books.toscrape.com.
-2026-05-14 10:50:37,612 [INFO] Scrape completed smoothly
-2026-05-14 10:50:37,643 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFile.xlsx
-2026-05-14 10:50:37,645 [INFO] End of program.
-2026-05-14 10:53:10,508 [INFO] Program has started and logging is configured
-2026-05-14 10:53:13,045 [INFO] Starting to scrape 6 pages from https://books.toscrape.com.
-2026-05-14 10:53:13,045 [ERROR] Main() ran into an error: Failed to scape books: generateCsvFilePath() missing 1 required positional argument: 'outputFolderPath'
-2026-05-14 10:53:13,046 [INFO] End of program.
-2026-05-14 10:53:54,772 [INFO] Program has started and logging is configured
-2026-05-14 10:53:57,379 [INFO] Starting to scrape 8 pages from https://books.toscrape.com.
-2026-05-14 10:54:06,446 [INFO] Scrape completed smoothly
-2026-05-14 10:54:06,474 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFile.xlsx
-2026-05-14 10:54:06,476 [INFO] End of program.
-2026-05-14 10:55:24,468 [INFO] Program has started and logging is configured
-2026-05-14 10:55:29,850 [INFO] Starting to scrape 7 pages from https://books.toscrape.com.
-2026-05-14 10:55:37,282 [INFO] Scrape completed smoothly
-2026-05-14 10:55:37,323 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFileEXCEL.xlsx
-2026-05-14 10:55:37,324 [INFO] End of program.
-2026-05-14 10:59:25,210 [INFO] Program has started and logging is configured
-2026-05-14 10:59:27,229 [INFO] Starting to scrape 4 pages from https://books.toscrape.com.
-2026-05-14 10:59:33,425 [INFO] Scrape completed smoothly
-2026-05-14 10:59:33,460 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFileEXCEL.xlsx
-2026-05-14 10:59:33,462 [INFO] End of program.
-2026-05-16 11:03:16,771 [INFO] Program has started and logging is configured
-2026-05-16 11:03:23,033 [INFO] Starting to scrape 4 pages from https://books.toscrape.com.
-2026-05-16 11:03:27,870 [INFO] Scrape completed smoothly
-2026-05-16 11:03:27,907 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFileEXCEL.xlsx
-2026-05-16 11:03:27,909 [INFO] End of program.
-2026-05-17 10:25:33,697 [INFO] Program has started and logging is configured
-2026-05-17 10:25:35,522 [INFO] Starting to scrape 4 pages from https://books.toscrape.com.
-2026-05-17 10:25:40,405 [INFO] Scrape completed smoothly
-2026-05-17 10:25:40,442 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFileEXCEL.xlsx
-2026-05-17 10:25:40,443 [INFO] End of program.
-2026-05-17 10:31:01,438 [INFO] Program has started and logging is configured
-2026-05-17 10:31:06,896 [INFO] Starting to scrape 13 pages from https://books.toscrape.com.
-2026-05-17 10:31:21,222 [INFO] Scrape completed smoothly
-2026-05-17 10:31:21,252 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFileEXCEL.xlsx
-2026-05-17 10:31:21,253 [INFO] End of program.
-2026-05-17 10:50:24,854 [INFO] Program has started and logging is configured
-2026-05-17 10:50:33,499 [INFO] Starting to scrape 3 pages from https://books.toscrape.com.
-2026-05-17 10:50:39,980 [INFO] Scrape completed smoothly
-2026-05-17 10:50:40,014 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFileEXCEL.xlsx
-2026-05-17 10:50:40,016 [INFO] End of program.
-2026-05-21 07:41:47,948 [INFO] Program has started and logging is configured
-2026-05-21 07:41:50,403 [INFO] Starting to scrape 6 pages from https://books.toscrape.com.
-2026-05-21 07:41:57,592 [INFO] Scrape completed smoothly
-2026-05-21 07:41:57,625 [INFO] Workbook saved to /home/lukes/WindowsSucks/outPutFileEXCEL.xlsx
-2026-05-21 07:41:57,626 [INFO] End of program.
-2026-05-21 07:43:01,671 [INFO] Program has started and logging is configured
-2026-05-21 07:43:07,246 [INFO] Starting to scrape 2 pages from https://books.toscrape.com.
-2026-05-21 07:43:09,570 [INFO] Scrape completed smoothly
-2026-05-21 07:43:09,608 [INFO] Workbook saved to ./output/outPutFileEXCEL.xlsx
-2026-05-21 07:43:09,609 [INFO] End of program.
-2026-05-21 07:52:55,338 [INFO] Program has started and logging is configured
-2026-05-21 07:52:55,345 [INFO] Starting to scrape 6 pages from https://books.toscrape.com.
-2026-05-21 07:53:03,831 [INFO] Scrape completed smoothly
-2026-05-21 07:53:03,867 [INFO] Workbook saved to ./output/outPutFileEXCEL.xlsx
-2026-05-21 07:53:03,868 [INFO] End of program.
-2026-05-21 08:06:48,432 [INFO] Program has started and logging is configured
-2026-05-21 08:06:48,438 [INFO] Starting to scrape 6 pages from https://books.toscrape.com.
-2026-05-21 08:06:55,551 [INFO] Scrape completed smoothly
-2026-05-21 08:06:55,560 [INFO] Workbook saved to ./output/outPutFileEXCEL.xlsx
-2026-05-21 08:06:55,562 [INFO] End of program.
-2026-05-21 08:07:33,157 [INFO] Program has started and logging is configured
-2026-05-21 08:07:33,166 [INFO] Starting to scrape 6 pages from https://books.toscrape.com.
-2026-05-21 08:07:41,567 [INFO] Scrape completed smoothly
-2026-05-21 08:07:41,577 [INFO] Workbook saved to ./output/outPutFileEXCEL.xlsx
-2026-05-21 08:07:41,579 [INFO] End of program.
-2026-05-21 08:23:27,565 [INFO] Program has started and logging is configured
-2026-05-21 08:23:27,575 [INFO] Starting to scrape 6 pages from https://books.toscrape.com.
-2026-05-21 08:23:33,734 [INFO] Scrape completed smoothly
-2026-05-21 08:23:33,769 [INFO] Workbook saved to ./output/outPutFileEXCEL.xlsx
-2026-05-21 08:23:33,770 [INFO] End of program.
-2026-05-21 08:23:49,801 [INFO] Program has started and logging is configured
-2026-05-21 08:23:49,809 [INFO] Starting to scrape 54 pages from https://books.toscrape.com.
-2026-05-21 08:25:00,832 [INFO] Scrape completed smoothly
-2026-05-21 08:25:00,869 [INFO] Workbook saved to ./output/outPutFileEXCEL.xlsx
-2026-05-21 08:25:00,870 [INFO] End of program.
-2026-05-21 08:32:30,752 [INFO] Program has started and logging is configured
-2026-05-21 08:32:30,759 [INFO] Starting to scrape 2 pages from https://books.toscrape.com.
-2026-05-21 08:32:34,056 [INFO] Scrape completed smoothly
-2026-05-21 08:32:34,084 [INFO] Workbook saved to ./output/outPutFileEXCEL.xlsx
-2026-05-21 08:32:34,086 [INFO] End of program.
-2026-05-21 08:32:52,114 [INFO] Program has started and logging is configured
-2026-05-21 08:32:52,122 [INFO] Starting to scrape 53 pages from https://books.toscrape.com.
-2026-05-21 08:33:57,990 [WARNING] Failed to increment page. Could not find Next Button with the next page URL
-2026-05-21 08:33:58,076 [WARNING] Failed to increment page. Could not find Next Button with the next page URL
-2026-05-21 08:33:58,130 [WARNING] Failed to increment page. Could not find Next Button with the next page URL
-2026-05-21 08:33:58,187 [ERROR] All attempts to increment page 50 have failed. Returning to main
-2026-05-21 08:33:58,986 [WARNING] Attempt 1/3 to get soup of current page failed: Failed to get Response from SessionInvalid URL 'None': No scheme supplied. Perhaps you meant https://None?
-2026-05-21 08:33:59,595 [WARNING] Attempt 2/3 to get soup of current page failed: Failed to get Response from SessionInvalid URL 'None': No scheme supplied. Perhaps you meant https://None?
-2026-05-21 08:34:00,866 [WARNING] Attempt 3/3 to get soup of current page failed: Failed to get Response from SessionInvalid URL 'None': No scheme supplied. Perhaps you meant https://None?
-2026-05-21 08:34:01,389 [WARNING] Failed to get soup at page 51. Failed to get soup after 3 attempts. 
-2026-05-21 08:34:01,390 [INFO] Scrape completed smoothly
-2026-05-21 08:34:01,447 [INFO] Workbook saved to ./output/outPutFileEXCEL.xlsx
-2026-05-21 08:34:01,448 [INFO] End of program.
+2026-05-21 08:55:58,169 [INFO] Program has started and logging is configured
+2026-05-21 08:55:58,177 [INFO] Starting to scrape 53 pages from https://books.toscrape.com.
+2026-05-21 08:57:01,486 [WARNING] Failed to increment page. Could not find Next Button with the next page URL
+2026-05-21 08:57:01,550 [WARNING] Failed to increment page. Could not find Next Button with the next page URL
+2026-05-21 08:57:01,609 [WARNING] Failed to increment page. Could not find Next Button with the next page URL
+2026-05-21 08:57:01,664 [ERROR] All attempts to increment page 50 have failed. Returning to main
+2026-05-21 08:57:02,265 [WARNING] Attempt 1/3 to get soup of current page failed: Failed to get Response from SessionInvalid URL 'None': No scheme supplied. Perhaps you meant https://None?
+2026-05-21 08:57:02,786 [WARNING] Attempt 2/3 to get soup of current page failed: Failed to get Response from SessionInvalid URL 'None': No scheme supplied. Perhaps you meant https://None?
+2026-05-21 08:57:04,080 [WARNING] Attempt 3/3 to get soup of current page failed: Failed to get Response from SessionInvalid URL 'None': No scheme supplied. Perhaps you meant https://None?
+2026-05-21 08:57:05,016 [WARNING] Failed to get soup at page 51. Failed to get soup after 3 attempts. 
+2026-05-21 08:57:05,018 [INFO] Scrape completed smoothly
+2026-05-21 08:57:05,073 [INFO] Workbook saved to ./output/outPutFileEXCEL.xlsx
+2026-05-21 08:57:05,075 [INFO] End of program.
+2026-05-21 09:00:58,656 [INFO] Program has started and logging is configured
+2026-05-21 09:00:58,663 [INFO] Starting to scrape 3 pages from https://books.toscrape.com.
+2026-05-21 09:01:01,731 [INFO] Scrape completed smoothly
+2026-05-21 09:01:01,763 [INFO] Workbook saved to ./output/outPutFileEXCEL.xlsx
+2026-05-21 09:01:01,765 [INFO] End of program.
+2026-05-21 09:16:14,013 [INFO] Program has started and logging is configured
+2026-05-21 09:16:14,310 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:16:14,313 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:16:14,313 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:16:14,314 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:16:14,314 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:16:14,314 [INFO] End of program.
+2026-05-21 09:17:35,972 [INFO] Program has started and logging is configured
+2026-05-21 09:17:36,355 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:17:36,357 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:17:36,357 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:17:36,358 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:17:36,358 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:17:36,358 [INFO] End of program.
+2026-05-21 09:17:48,934 [INFO] Program has started and logging is configured
+2026-05-21 09:17:49,135 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:17:49,135 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:17:49,135 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:17:49,135 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:17:49,136 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:17:49,136 [INFO] End of program.
+2026-05-21 09:18:38,331 [INFO] Program has started and logging is configured
+2026-05-21 09:18:38,547 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:18:38,548 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:18:38,548 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:18:38,548 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:18:38,548 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:18:38,548 [ERROR] Main() ran into an error: Failed to find config file.
+2026-05-21 09:18:38,548 [INFO] End of program.
+2026-05-21 09:19:11,296 [INFO] Program has started and logging is configured
+2026-05-21 09:19:11,571 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:19:11,572 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:19:11,572 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:19:11,572 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:19:11,572 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
+2026-05-21 09:19:11,573 [ERROR] Main() ran into an error: Failed to find config file.
+2026-05-21 09:19:14,573 [INFO] End of program.

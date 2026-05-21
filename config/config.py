@@ -6,7 +6,12 @@
 # numOfRetries = 3                        # The number of times the program should try getting the soup of a page before giving up.
 # # -- -- -- -- -- -- -- -- -- -- --
 import json
+import logging
 
 def getConfigsFromJson():
-    with open("./config/config.json", "r") as configFile:
-        return json.load(configFile)
+    try:
+        with open("./config/config.json", "r") as configFile:
+            return json.load(configFile)
+    except Exception as e:
+        logging.error(f"Failed to access config: {e}")
+        raise Exception("Failed to access config.")

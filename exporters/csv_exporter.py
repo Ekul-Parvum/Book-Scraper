@@ -3,7 +3,10 @@
 import config.config as config
 import os
 
-configJson = config.getConfigsFromJson()
+try:
+    configJson = config.getConfigsFromJson()
+except:
+    configJson = None
 
 # generateCsvFilePath - generates a path to the csv file we are saving to. Generates a new file there if there is not allready one.
 # Parameters:

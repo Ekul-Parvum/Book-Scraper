@@ -8,7 +8,10 @@ from urllib.parse import urljoin# Has some functions to make working with urls e
 from modules.book import Book
 import config.config as config
 
-configJson = config.getConfigsFromJson()
+try:
+    configJson = config.getConfigsFromJson()
+except:
+    configJson = None
 
 # region navigting the site Functions
 

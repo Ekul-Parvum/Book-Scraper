@@ -6,6 +6,15 @@ Improvements:
     6. Put everything together into a simulated final product, with an executable and everything.
     
 """
+# /-/ /-/ /-[ Setting up Logs: ]-\ \-\ \-\
+import logging                  # For loging errors.
+logging.basicConfig(
+        filename="logs/scraper.log",
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s"
+    )
+logging.info("Program has started and logging is configured")
+# \-\ \-\ \-\ \-\ \-\  /-/ /-/ /-/ /-/ /-/
 
 # - - - - - -[ Liberaries: ]- - - - - -
 import requests                 # For getting html data from sites
@@ -19,7 +28,6 @@ import os                       # For handling filesystem stuff
 import time                     # For deleys
 import random                   # For random number generator
 
-import logging                  # For loging errors.
 # - - - - - - - - - - - - - - - - - - -
 
 # -/- -/- -/-[ Files I made: ]-\- -\- -\-
@@ -31,18 +39,11 @@ import exporters.csv_exporter as csv_exporter
 import exporters.json_exporter as json_exporter
 # -\- -\- -\- -\- -\- -/- -/- -/- -/- -/-
 
-configJson = config.getConfigsFromJson()
 
-# configLogs - sets up the configs for logging stuff
-# Parameters: None
-# Returns: void
-def configLogs():
-    logging.basicConfig(
-        filename="logs/scraper.log",
-        level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(message)s"
-    )
-    logging.info("Program has started and logging is configured")
+try:
+    configJson = config.getConfigsFromJson()
+except:
+    configJson = None
 
 # getUserInput - Gets the user input for how many pages the program will look through
 # Parameters:
@@ -197,6 +198,10 @@ def scrapePages(numOfPages, session, pageUrl, pageNum, workBook, outputFolderPat
 # Returns: void
 # Error Handling: Logs Info. Raises informative exceptions
 def main():
+    if (configJson == None):
+        print ("[ERROR]: Could not find config folder. Should be ./config/config.json.")
+        raise Exception("Failed to find config file.")
+    
     # Clearing the terminal:
     os.system("clear")
 
@@ -251,9 +256,6 @@ def main():
 
     return
 
-# Setting up logs:
-configLogs()
-
 # Calling the main function to start the program:
 try:
     main()
@@ -261,6 +263,7 @@ try:
 except Exception as e:
     logging.error(f"Main() ran into an error: {e}")
     print("Program has failed to run. \nPlease check that there are no network issues and that the site has not changed since this program was writen.")
+    time.sleep(3)
 
 # Logging end of program:
 logging.info("End of program.")

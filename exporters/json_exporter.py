@@ -3,8 +3,10 @@
 import config.config as config
 import os
 import json
-
-configJson = config.getConfigsFromJson()
+try:
+    configJson = config.getConfigsFromJson()
+except:
+    configJson = None
 
 def generateJsonFilePath(outputFolderPath):
     return os.path.join(outputFolderPath, configJson["outputFileName"] + "JSON.json")
