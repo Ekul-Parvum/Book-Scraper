@@ -73,8 +73,7 @@ def incrementPageUrl(currentUrl, soup):
 def incrementPageUrlRetry(pageUrl, soup, session, pageNum):
     for attempt in range(configJson["numOfRetries"]):
         try:
-            pageUrl = incrementPageUrl(pageUrl, soup)
-            break
+            return incrementPageUrl(pageUrl, soup)
         except Exception as e:
             logging.warning(f"Failed to increment page. {e}")
 
@@ -89,7 +88,7 @@ def incrementPageUrlRetry(pageUrl, soup, session, pageNum):
         # If we go through all our attempts, and still cant increment the page, just give up
         logging.error(f"All attempts to increment page {pageNum} have failed. Returning to main")
         # Need to let user know we can't go any further:
-        print(f"\nCan not find URL to page {pageNum}.\nCan not go further than page {pageNum - 1}.\nQuiting Program.")
+        print(f"\nCan not find URL to page {pageNum + 1}.\nCan not go further than page {pageNum}.\nQuiting Program.")
         return
 
 # getNumberOfPages - Gets the number of pages of books in the website

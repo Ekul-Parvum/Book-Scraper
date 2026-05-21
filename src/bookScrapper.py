@@ -23,7 +23,7 @@ import logging                  # For loging errors.
 # - - - - - - - - - - - - - - - - - - -
 
 # -/- -/- -/-[ Files I made: ]-\- -\- -\-
-import scraper.networking as networking
+import src.networking as networking
 import config.config as config          # Config File - has all my constants/settings
 
 import exporters.excel_exporter as excel_exporter
@@ -132,7 +132,7 @@ def scrapePage(pageUrl, session, numOfPages, pageNum, workBook, csvWriter, jsonF
             json_exporter.savePageToJSON(thisPage, jsonFile)
 
             # Increment the page:
-            networking.incrementPageUrlRetry(pageUrl, soup, session, pageNum)
+            pageUrl = networking.incrementPageUrlRetry(pageUrl, soup, session, pageNum)
                 
             # Keep track of what page number we are on:
             pageNum += 1

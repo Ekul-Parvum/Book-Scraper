@@ -3,7 +3,7 @@
     "outputFileName": "outPutFile",
 
     "pageUrl": "https://books.toscrape.com",
-    "numOfPagesToScrape": 6,
+    "numOfPagesToScrape": 53,
 
     "numOfRetries": 3,
 
