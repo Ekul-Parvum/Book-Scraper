@@ -3,9 +3,6 @@
 
 """ 
 Improvements:
-    3. Figure out what "bookScrapper.spec" is.
-    4. Make ReadMe
-    5. Add wait to exit program
     6. Put everything together into a simulated final product, with an executable and everything.
     
 """
