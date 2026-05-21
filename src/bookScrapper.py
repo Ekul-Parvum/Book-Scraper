@@ -3,7 +3,7 @@
 
 """ 
 Improvements:
-    6. Put everything together into a simulated final product, with an executable and everything.
+    Did I... Finish..? Finaly...?
     
 """
 # /-/ /-/ /-[ Setting up Logs: ]-\ \-\ \-\

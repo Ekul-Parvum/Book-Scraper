@@ -53,3 +53,8 @@
 2026-05-21 09:19:11,572 [ERROR] Failed to access config: [Errno 2] No such file or directory: './config/config.json'
 2026-05-21 09:19:11,573 [ERROR] Main() ran into an error: Failed to find config file.
 2026-05-21 09:19:14,573 [INFO] End of program.
+2026-05-21 09:20:05,014 [INFO] Program has started and logging is configured
+2026-05-21 09:20:05,289 [INFO] Starting to scrape 3 pages from https://books.toscrape.com.
+2026-05-21 09:20:13,083 [INFO] Scrape completed smoothly
+2026-05-21 09:20:13,115 [INFO] Workbook saved to ./output/outPutFileEXCEL.xlsx
+2026-05-21 09:20:13,117 [INFO] End of program.
