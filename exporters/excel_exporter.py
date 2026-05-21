@@ -51,8 +51,6 @@ def savingToExcelDoc(workBook, outputFolderPath):
     #excelDocName = folderPath + outputFileName + ".xlsx"
     excelDocName = os.path.join(outputFolderPath, configJson["outputFileName"] + "EXCEL.xlsx")
 
-    print("Saving to: " + excelDocName)
-
     try:
         workBook.save(excelDocName)
     except Exception as e:

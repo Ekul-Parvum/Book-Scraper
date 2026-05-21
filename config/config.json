@@ -1,6 +1,11 @@
 {
-    "lengthOfBar": 30,
-    "outputFilePath": "~/WindowsSucks",
+    "outputFilePath": "./output",
     "outputFileName": "outPutFile",
-    "numOfRetries": 3
+
+    "pageUrl": "https://books.toscrape.com",
+    "numOfPagesToScrape": 6,
+
+    "numOfRetries": 3,
+
+    "lengthOfBar": 30
 }

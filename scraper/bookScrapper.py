@@ -3,11 +3,10 @@
 
 """ 
 Improvements:
-    1. Move config to .json
-    2. Update config so that there are less user inputs
     3. Figure out what "bookScrapper.spec" is.
     4. Make ReadMe
-    5. Put everything together into a simulated final product, with an executable and everything.
+    5. Add wait to exit program
+    6. Put everything together into a simulated final product, with an executable and everything.
     
 """
 
@@ -101,7 +100,7 @@ def generateFileOutputPath():
     
     return folderPath
 
-# scrapePage - scrapes all the books from the current page, and saves them to the 3 file formats
+# scrapePage - scrapes all the books from all the pages, and saves them to the 3 file formats
 # Parameters:
 #       pageUrl - the url of the current page. Will be incremented to go to next pages
 #       session - the session it will use to pull data from the site
@@ -213,18 +212,18 @@ def main():
     })
 
     # - - - [ Variables:  ] - - - 
-    pageUrl = "https://books.toscrape.com"      # The URL of the page we are currently on
-    numOfPages = None
+    pageUrl = configJson["pageUrl"]             # The URL of the page we are currently on
+    numOfPages = configJson["numOfPagesToScrape"]
     workBook = Workbook()                       # Workbook for saving the data into an excel doc
     pageNum = 1                                 # The page number of the page we are currently on
     # - - - - - - - - - - - - - - 
     
-    # Getting the user input:
-    try:
-        numOfPages = getUserInput(pageUrl, session) # Gets user input for the number of pages to scrape data from
-    except Exception as e:
-        # raising Exception:
-        raise Exception(f"Failed to get user input. Quiting main. {e}")
+    # # Getting the user input:
+    # try:
+    #     numOfPages = getUserInput(pageUrl, session) # Gets user input for the number of pages to scrape data from
+    # except Exception as e:
+    #     # raising Exception:
+    #     raise Exception(f"Failed to get user input. Quiting main. {e}")
 
     # If the number of pages is 0, then the user wants to exit the program:
     if (numOfPages == 0):
@@ -245,6 +244,8 @@ def main():
         raise Exception(f"Failed to scape books: {e}")
     
     # Saving stuff:
+    print("Saving output files to " + outputFolderPath)
+
     # Saving Excel
     try:
         excel_exporter.savingToExcelDoc(workBook, outputFolderPath)
@@ -266,3 +267,6 @@ except Exception as e:
 
 # Logging end of program:
 logging.info("End of program.")
+
+# Wait a moment so the user can read the last ouput messages:
+time.sleep(1.5)
