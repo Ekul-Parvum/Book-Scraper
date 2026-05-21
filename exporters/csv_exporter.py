@@ -3,13 +3,15 @@
 import config.config as config
 import os
 
+configJson = config.getConfigsFromJson()
+
 # generateCsvFilePath - generates a path to the csv file we are saving to. Generates a new file there if there is not allready one.
 # Parameters:
 #       outputFolderPath - path to the folder the .csv will be in.
 # returns: the file path as a string
 # Error Handling: None
 def generateCsvFilePath(outputFolderPath):
-    return os.path.join(outputFolderPath, config.outputFileName + "CSV.csv")
+    return os.path.join(outputFolderPath, configJson["outputFileName"] + "CSV.csv")
 
 # savePageToCSV - saves the given page to the csvFile.
 # Parameters:

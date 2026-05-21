@@ -35,6 +35,8 @@ import exporters.csv_exporter as csv_exporter
 import exporters.json_exporter as json_exporter
 # -\- -\- -\- -\- -\- -/- -/- -/- -/- -/-
 
+configJson = config.getConfigsFromJson()
+
 # configLogs - sets up the configs for logging stuff
 # Parameters: None
 # Returns: void
@@ -55,7 +57,7 @@ def getUserInput(pageUrl, session):
     soup = None
     # Get the soup of the page:
     try:
-        soup = networking.getSoupRetry(pageUrl, session, config.numOfRetries)
+        soup = networking.getSoupRetry(pageUrl, session, configJson["numOfRetries"])
     except Exception as e:
         raise Exception(f"Failed to get soup for userInput. {e}")
 
@@ -88,7 +90,7 @@ def getUserInput(pageUrl, session):
 # Returns: the folder path to the output folder as a string
 # Error Handling: Logs errors. raises informative exception.
 def generateFileOutputPath():
-    folderPath = os.path.expanduser(config.outputFilePath)
+    folderPath = os.path.expanduser(configJson["outputFilePath"])
     
     # Create folder if it doesn't exist
     try:
@@ -116,7 +118,7 @@ def scrapePage(pageUrl, session, numOfPages, pageNum, workBook, csvWriter, jsonF
 
         # Get the soup of the page:
         try:
-            soup = networking.getSoupRetry(pageUrl, session, config.numOfRetries)
+            soup = networking.getSoupRetry(pageUrl, session, configJson["numOfRetries"])
         except Exception as e:
             # Log warning:
             logging.warning(f"Failed to get soup at page {pageNum}. {e}")
@@ -140,8 +142,8 @@ def scrapePage(pageUrl, session, numOfPages, pageNum, workBook, csvWriter, jsonF
             pageNum += 1
 
             # And we update the loading bar:
-            numOfEquals = int((config.lengthOfBar/numOfPages) * (index + 1))
-            numOfDashes = config.lengthOfBar - numOfEquals
+            numOfEquals = int((configJson["lengthOfBar"]/numOfPages) * (index + 1))
+            numOfDashes = configJson["lengthOfBar"] - numOfEquals
             print("|" + "="*numOfEquals + "-"*numOfDashes + "|  (" + str(index + 1) + " / " + str(numOfPages) + ")", end="\r")
         else:
             # Log error for when getBooksFromPage() returns none:
@@ -168,7 +170,7 @@ def scrapePages(numOfPages, session, pageUrl, pageNum, workBook, outputFolderPat
 
     # Progress bar:
     print("Scraping from pages...")
-    print("|" + "-"*config.lengthOfBar + "|  (0 / " + str(numOfPages) + ")", end="\r")
+    print("|" + "-"*configJson["lengthOfBar"] + "|  (0 / " + str(numOfPages) + ")", end="\r")
 
     # Open/make the csvFile:
     with open(csv_exporter.generateCsvFilePath(outputFolderPath), "w") as csvFile:

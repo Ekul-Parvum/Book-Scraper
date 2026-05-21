@@ -8,6 +8,8 @@ from urllib.parse import urljoin# Has some functions to make working with urls e
 from modules.book import Book
 import config.config as config
 
+configJson = config.getConfigsFromJson()
+
 # region navigting the site Functions
 
 # getSoup - Gets the soup for the given url
@@ -69,7 +71,7 @@ def incrementPageUrl(currentUrl, soup):
         raise Exception("Could not find Next Button with the next page URL")
 
 def incrementPageUrlRetry(pageUrl, soup, session, pageNum):
-    for attempt in range(config.numOfRetries):
+    for attempt in range(configJson["numOfRetries"]):
         try:
             pageUrl = incrementPageUrl(pageUrl, soup)
             break
@@ -78,7 +80,7 @@ def incrementPageUrlRetry(pageUrl, soup, session, pageNum):
 
             # Try reloading the page before attempting to increment again:
             try:
-                soup = getSoupRetry(pageUrl, session, config.numOfRetries)
+                soup = getSoupRetry(pageUrl, session, configJson["numOfRetries"])
             except Exception as e:
                 logging.error(f"Failed to get soup. {e}")
                 print(f"\nCan not reload page {pageNum}.\nCan not go further than page {pageNum - 1}.\nQuiting Program.")

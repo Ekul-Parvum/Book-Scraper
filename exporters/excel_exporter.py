@@ -4,6 +4,8 @@ import os                       # For handling filesystem stuff
 import logging                  # For loging errors.
 import config.config as config                   # Config File - has all my constants/settings
 
+configJson = config.getConfigsFromJson()
+
 # makeWorkBookSheet - Compiles all the given book objects into an excel sheet
 # Parameters:
 #       bookObjs - Array of all the book objects to put into the exvel sheet
@@ -47,7 +49,7 @@ def savePageToWorkbook(workbook, page, pageNumber):
 def savingToExcelDoc(workBook, outputFolderPath):
 
     #excelDocName = folderPath + outputFileName + ".xlsx"
-    excelDocName = os.path.join(outputFolderPath, config.outputFileName + "EXCEL.xlsx")
+    excelDocName = os.path.join(outputFolderPath, configJson["outputFileName"] + "EXCEL.xlsx")
 
     print("Saving to: " + excelDocName)
 

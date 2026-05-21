@@ -4,8 +4,10 @@ import config.config as config
 import os
 import json
 
+configJson = config.getConfigsFromJson()
+
 def generateJsonFilePath(outputFolderPath):
-    return os.path.join(outputFolderPath, config.outputFileName + "JSON.json")
+    return os.path.join(outputFolderPath, configJson["outputFileName"] + "JSON.json")
 
 def savePageToJSON(bookObj, jsonFile):
 
